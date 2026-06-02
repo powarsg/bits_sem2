@@ -45,7 +45,7 @@ import matplotlib.pyplot as plt
 # Assignment Parameters
 # =========================================================
 
-GROUP_NO = 118
+GROUP_NO = 116
 
 # Reproducibility
 random.seed(GROUP_NO)
@@ -86,7 +86,7 @@ for i, p in enumerate(hidden_probabilities):
     print(f"Medicine {i} : {p}")
 
 # ---------------------------------------------------------
-# Generate Base Dataset
+# Task 1 : Generate Base Dataset
 #
 # severity = (patient_id % 5)+1
 #
@@ -104,6 +104,7 @@ dataset["severity_score"] = \
         lambda x: (x % 5) + 1
     )
 
+# Display first 10 rows of the dataset
 print("\nFirst 10 Dataset Rows")
 print(dataset.head(10))
 
@@ -236,7 +237,7 @@ def immediate_exploitation():
     print(f"Medicine {best_medicine} with success rate {success_rates[best_medicine]:.2f}")
 
     # ----------------------------------
-    # Exploit best medicine
+    # Greedy - Exploit best medicine
     # ----------------------------------
 
     while patient_counter < TOTAL_PATIENTS:
@@ -315,7 +316,7 @@ def epsilon_greedy(epsilon):
                     K - 1
                 )
 
-            # Exploitation
+            # Greedy - Exploitation
             else:
 
                 averages = np.divide(
@@ -476,7 +477,7 @@ print("\nRunning UCB1...")
 ucb_rewards = ucb1()
 
 # =========================================================
-# Final Rewards
+# Print Final Rewards
 # =========================================================
 
 print("\n")
