@@ -1,0 +1,653 @@
+======================================================================
+  DEFENCE DRONE - GBFS PATHFINDING AGENT
+======================================================================
+  Group: G116
+  Course: AIMLCZG557/AECLZG557 (S2_2025-2026)
+  Start Node: (0, 0)
+  Goal Node: (7, 7)
+  Grid Size: 8 x 8
+
+==================================================
+ENVIRONMENT GRID (8x8)
+==================================================
+     0   1   2   3   4   5   6   7
+   ---------------------------------
+ 0 |  S   .   N   .   .   W   .   .  
+ 1 |  .   .   N   .   W   .   .   .  
+ 2 |  .   W   N   .   .   .   N   .  
+ 3 |  .   .   .   .   W   .   N   .  
+ 4 |  W   .   .   N   .   .   .   .  
+ 5 |  .   .   W   N   .   .   W   .  
+ 6 |  .   W   .   .   .   W   .   .  
+ 7 |  .   .   .   .   N   .   .   E  
+
+  No-Fly Zones: 8
+  Weather Hazards: 9
+======================================================================
+  GBFS WITH HEURISTIC h1 (EUCLIDEAN DISTANCE)
+======================================================================
+
+  ✓ Path FOUND using h1 (Euclidean Distance)
+
+  Path (15 nodes, 14 moves):
+  ────────────────────────────────────────
+    Step  0: (0,0) [Start] cost=1
+    Step  1: (0,1) [Passable] cost=1 <- East
+    Step  2: (1,1) [Passable] cost=1 <- South
+    Step  3: (2,1) [Weather[!]] cost=4 <- South
+    Step  4: (3,1) [Passable] cost=1 <- South
+    Step  5: (3,2) [Passable] cost=1 <- East
+    Step  6: (3,3) [Passable] cost=1 <- East
+    Step  7: (3,4) [Weather[!]] cost=4 <- East
+    Step  8: (4,4) [Passable] cost=1 <- South
+    Step  9: (4,5) [Passable] cost=1 <- East
+    Step 10: (5,5) [Passable] cost=1 <- South
+    Step 11: (5,6) [Weather[!]] cost=4 <- East
+    Step 12: (6,6) [Passable] cost=1 <- South
+    Step 13: (6,7) [Passable] cost=1 <- East
+    Step 14: (7,7) [Goal] cost=1 <- South
+
+  Penalties Incurred:
+    Weather Zones Crossed: 3
+    Weather Penalty Total: 12
+    No-Fly Zones Crossed: 0
+
+──────────────────────────────────────────────────────────────────────
+  GBFS h1 - Iteration Details
+──────────────────────────────────────────────────────────────────────
+
+  Iteration 1:
+    Current Node: (0, 0)
+    Heuristic Value: 9.8995
+    Explored Nodes Count: 0
+    Frontier Size: 1
+    Neighbors Evaluated:
+      → East: (0, 1), h=9.2195
+      → South: (1, 0), h=9.2195
+    Frontier Nodes (top 10): [((0, 0), 9.8995)]
+    Selected Next Node: (0, 1)
+
+  Iteration 2:
+    Current Node: (0, 1)
+    Heuristic Value: 9.2195
+    Explored Nodes Count: 1
+    Frontier Size: 2
+    Neighbors Evaluated:
+      → South: (1, 1), h=8.4853
+    Frontier Nodes (top 10): [((0, 1), 9.2195), ((1, 0), 9.2195)]
+    Selected Next Node: (1, 1)
+
+  Iteration 3:
+    Current Node: (1, 1)
+    Heuristic Value: 8.4853
+    Explored Nodes Count: 2
+    Frontier Size: 2
+    Neighbors Evaluated:
+      → South: (2, 1), h=7.8102
+    Frontier Nodes (top 10): [((1, 1), 8.4853), ((1, 0), 9.2195)]
+    Selected Next Node: (2, 1)
+
+  Iteration 4:
+    Current Node: (2, 1)
+    Heuristic Value: 7.8102
+    Explored Nodes Count: 3
+    Frontier Size: 2
+    Neighbors Evaluated:
+      → South: (3, 1), h=7.2111
+      → West: (2, 0), h=8.6023
+    Frontier Nodes (top 10): [((2, 1), 7.8102), ((1, 0), 9.2195)]
+    Selected Next Node: (3, 1)
+
+  Iteration 5:
+    Current Node: (3, 1)
+    Heuristic Value: 7.2111
+    Explored Nodes Count: 4
+    Frontier Size: 3
+    Neighbors Evaluated:
+      → East: (3, 2), h=6.4031
+      → South: (4, 1), h=6.7082
+      → West: (3, 0), h=8.0623
+    Frontier Nodes (top 10): [((3, 1), 7.2111), ((1, 0), 9.2195), ((2, 0), 8.6023)]
+    Selected Next Node: (3, 2)
+
+  Iteration 6:
+    Current Node: (3, 2)
+    Heuristic Value: 6.4031
+    Explored Nodes Count: 5
+    Frontier Size: 5
+    Neighbors Evaluated:
+      → East: (3, 3), h=5.6569
+      → South: (4, 2), h=5.831
+    Frontier Nodes (top 10): [((3, 2), 6.4031), ((4, 1), 6.7082), ((2, 0), 8.6023), ((1, 0), 9.2195), ((3, 0), 8.0623)]
+    Selected Next Node: (3, 3)
+
+  Iteration 7:
+    Current Node: (3, 3)
+    Heuristic Value: 5.6569
+    Explored Nodes Count: 6
+    Frontier Size: 6
+    Neighbors Evaluated:
+      → North: (2, 3), h=6.4031
+      → East: (3, 4), h=5.0
+    Frontier Nodes (top 10): [((3, 3), 5.6569), ((4, 1), 6.7082), ((4, 2), 5.831), ((1, 0), 9.2195), ((3, 0), 8.0623), ((2, 0), 8.6023)]
+    Selected Next Node: (3, 4)
+
+  Iteration 8:
+    Current Node: (3, 4)
+    Heuristic Value: 5.0
+    Explored Nodes Count: 7
+    Frontier Size: 7
+    Neighbors Evaluated:
+      → North: (2, 4), h=5.831
+      → East: (3, 5), h=4.4721
+      → South: (4, 4), h=4.2426
+    Frontier Nodes (top 10): [((3, 4), 5.0), ((4, 1), 6.7082), ((4, 2), 5.831), ((1, 0), 9.2195), ((3, 0), 8.0623), ((2, 0), 8.6023), ((2, 3), 6.4031)]
+    Selected Next Node: (4, 4)
+
+  Iteration 9:
+    Current Node: (4, 4)
+    Heuristic Value: 4.2426
+    Explored Nodes Count: 8
+    Frontier Size: 9
+    Neighbors Evaluated:
+      → East: (4, 5), h=3.6056
+      → South: (5, 4), h=3.6056
+    Frontier Nodes (top 10): [((4, 4), 4.2426), ((3, 5), 4.4721), ((2, 4), 5.831), ((4, 2), 5.831), ((3, 0), 8.0623), ((2, 0), 8.6023), ((2, 3), 6.4031), ((1, 0), 9.2195), ((4, 1), 6.7082)]
+    Selected Next Node: (4, 5)
+
+  Iteration 10:
+    Current Node: (4, 5)
+    Heuristic Value: 3.6056
+    Explored Nodes Count: 9
+    Frontier Size: 10
+    Neighbors Evaluated:
+      → East: (4, 6), h=3.1623
+      → South: (5, 5), h=2.8284
+    Frontier Nodes (top 10): [((4, 5), 3.6056), ((5, 4), 3.6056), ((2, 4), 5.831), ((4, 2), 5.831), ((3, 5), 4.4721), ((2, 0), 8.6023), ((2, 3), 6.4031), ((1, 0), 9.2195), ((4, 1), 6.7082), ((3, 0), 8.0623)]
+    Selected Next Node: (5, 5)
+
+  Iteration 11:
+    Current Node: (5, 5)
+    Heuristic Value: 2.8284
+    Explored Nodes Count: 10
+    Frontier Size: 11
+    Neighbors Evaluated:
+      → East: (5, 6), h=2.2361
+      → South: (6, 5), h=2.2361
+    Selected Next Node: (5, 6)
+
+  Iteration 12:
+    Current Node: (5, 6)
+    Heuristic Value: 2.2361
+    Explored Nodes Count: 11
+    Frontier Size: 12
+    Neighbors Evaluated:
+      → East: (5, 7), h=2.0
+      → South: (6, 6), h=1.4142
+    Selected Next Node: (6, 6)
+
+  Iteration 13:
+    Current Node: (6, 6)
+    Heuristic Value: 1.4142
+    Explored Nodes Count: 12
+    Frontier Size: 13
+    Neighbors Evaluated:
+      → East: (6, 7), h=1.0
+      → South: (7, 6), h=1.0
+    Selected Next Node: (6, 7)
+
+  Iteration 14:
+    Current Node: (6, 7)
+    Heuristic Value: 1.0
+    Explored Nodes Count: 13
+    Frontier Size: 14
+    Neighbors Evaluated:
+      → South: (7, 7), h=0.0
+    Selected Next Node: (7, 7)
+
+  Iteration 15:
+    Current Node: (7, 7)
+    Heuristic Value: 0.0
+    Explored Nodes Count: 14
+    Frontier Size: 14
+    Selected Next Node: GOAL REACHED
+======================================================================
+  GBFS WITH HEURISTIC h2 (BOUNDING-BOX RISK-WEIGHTED)
+======================================================================
+
+  ✓ Path FOUND using h2 (Bounding-Box Risk-Weighted)
+
+  Path (17 nodes, 16 moves):
+  ────────────────────────────────────────
+    Step  0: (0,0) [Start] cost=1
+    Step  1: (1,0) [Passable] cost=1 <- South
+    Step  2: (2,0) [Passable] cost=1 <- South
+    Step  3: (3,0) [Passable] cost=1 <- South
+    Step  4: (4,0) [Weather[!]] cost=4 <- South
+    Step  5: (5,0) [Passable] cost=1 <- South
+    Step  6: (6,0) [Passable] cost=1 <- South
+    Step  7: (7,0) [Passable] cost=1 <- South
+    Step  8: (7,1) [Passable] cost=1 <- East
+    Step  9: (7,2) [Passable] cost=1 <- East
+    Step 10: (7,3) [Passable] cost=1 <- East
+    Step 11: (6,3) [Passable] cost=1 <- North
+    Step 12: (6,4) [Passable] cost=1 <- East
+    Step 13: (6,5) [Weather[!]] cost=4 <- East
+    Step 14: (6,6) [Passable] cost=1 <- East
+    Step 15: (6,7) [Passable] cost=1 <- East
+    Step 16: (7,7) [Goal] cost=1 <- South
+
+  Penalties Incurred:
+    Weather Zones Crossed: 2
+    Weather Penalty Total: 8
+    No-Fly Zones Crossed: 0
+
+──────────────────────────────────────────────────────────────────────
+  GBFS h2 - Iteration Details
+──────────────────────────────────────────────────────────────────────
+
+  Iteration 1:
+    Current Node: (0, 0)
+    Heuristic Value: 32.1562
+    Explored Nodes Count: 0
+    Frontier Size: 1
+    Neighbors Evaluated:
+      → East: (0, 1), h=31.5714
+      → South: (1, 0), h=29.9464
+    Frontier Nodes (top 10): [((0, 0), 32.1562)]
+    Selected Next Node: (1, 0)
+
+  Iteration 2:
+    Current Node: (1, 0)
+    Heuristic Value: 29.9464
+    Explored Nodes Count: 1
+    Frontier Size: 2
+    Neighbors Evaluated:
+      → East: (1, 1), h=29.1429
+      → South: (2, 0), h=27.75
+    Frontier Nodes (top 10): [((1, 0), 29.9464), ((0, 1), 31.5714)]
+    Selected Next Node: (2, 0)
+
+  Iteration 3:
+    Current Node: (2, 0)
+    Heuristic Value: 27.75
+    Explored Nodes Count: 2
+    Frontier Size: 3
+    Neighbors Evaluated:
+      → East: (2, 1), h=26.7143
+      → South: (3, 0), h=23.65
+    Frontier Nodes (top 10): [((2, 0), 27.75), ((0, 1), 31.5714), ((1, 1), 29.1429)]
+    Selected Next Node: (3, 0)
+
+  Iteration 4:
+    Current Node: (3, 0)
+    Heuristic Value: 23.65
+    Explored Nodes Count: 3
+    Frontier Size: 4
+    Neighbors Evaluated:
+      → East: (3, 1), h=22.2857
+      → South: (4, 0), h=21.25
+    Frontier Nodes (top 10): [((3, 0), 23.65), ((2, 1), 26.7143), ((1, 1), 29.1429), ((0, 1), 31.5714)]
+    Selected Next Node: (4, 0)
+
+  Iteration 5:
+    Current Node: (4, 0)
+    Heuristic Value: 21.25
+    Explored Nodes Count: 4
+    Frontier Size: 5
+    Neighbors Evaluated:
+      → East: (4, 1), h=19.6071
+      → South: (5, 0), h=18.75
+    Frontier Nodes (top 10): [((4, 0), 21.25), ((3, 1), 22.2857), ((1, 1), 29.1429), ((0, 1), 31.5714), ((2, 1), 26.7143)]
+    Selected Next Node: (5, 0)
+
+  Iteration 6:
+    Current Node: (5, 0)
+    Heuristic Value: 18.75
+    Explored Nodes Count: 5
+    Frontier Size: 6
+    Neighbors Evaluated:
+      → East: (5, 1), h=17.9048
+      → South: (6, 0), h=14.5
+    Frontier Nodes (top 10): [((5, 0), 18.75), ((3, 1), 22.2857), ((4, 1), 19.6071), ((0, 1), 31.5714), ((2, 1), 26.7143), ((1, 1), 29.1429)]
+    Selected Next Node: (6, 0)
+
+  Iteration 7:
+    Current Node: (6, 0)
+    Heuristic Value: 14.5
+    Explored Nodes Count: 6
+    Frontier Size: 7
+    Neighbors Evaluated:
+      → East: (6, 1), h=13.5
+      → South: (7, 0), h=13.125
+    Frontier Nodes (top 10): [((6, 0), 14.5), ((3, 1), 22.2857), ((5, 1), 17.9048), ((0, 1), 31.5714), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071)]
+    Selected Next Node: (7, 0)
+
+  Iteration 8:
+    Current Node: (7, 0)
+    Heuristic Value: 13.125
+    Explored Nodes Count: 7
+    Frontier Size: 8
+    Neighbors Evaluated:
+      → East: (7, 1), h=12.0
+    Frontier Nodes (top 10): [((7, 0), 13.125), ((6, 1), 13.5), ((5, 1), 17.9048), ((3, 1), 22.2857), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714)]
+    Selected Next Node: (7, 1)
+
+  Iteration 9:
+    Current Node: (7, 1)
+    Heuristic Value: 12.0
+    Explored Nodes Count: 8
+    Frontier Size: 8
+    Neighbors Evaluated:
+      → East: (7, 2), h=10.8333
+    Frontier Nodes (top 10): [((7, 1), 12.0), ((6, 1), 13.5), ((5, 1), 17.9048), ((3, 1), 22.2857), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714)]
+    Selected Next Node: (7, 2)
+
+  Iteration 10:
+    Current Node: (7, 2)
+    Heuristic Value: 10.8333
+    Explored Nodes Count: 9
+    Frontier Size: 8
+    Neighbors Evaluated:
+      → North: (6, 2), h=11.0
+      → East: (7, 3), h=9.6
+    Frontier Nodes (top 10): [((7, 2), 10.8333), ((6, 1), 13.5), ((5, 1), 17.9048), ((3, 1), 22.2857), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714)]
+    Selected Next Node: (7, 3)
+
+  Iteration 11:
+    Current Node: (7, 3)
+    Heuristic Value: 9.6
+    Explored Nodes Count: 10
+    Frontier Size: 9
+    Neighbors Evaluated:
+      → North: (6, 3), h=10.0
+    Frontier Nodes (top 10): [((7, 3), 9.6), ((6, 2), 11.0), ((5, 1), 17.9048), ((6, 1), 13.5), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714), ((3, 1), 22.2857)]
+    Selected Next Node: (6, 3)
+
+  Iteration 12:
+    Current Node: (6, 3)
+    Heuristic Value: 10.0
+    Explored Nodes Count: 11
+    Frontier Size: 9
+    Neighbors Evaluated:
+      → East: (6, 4), h=9.0
+    Frontier Nodes (top 10): [((6, 3), 10.0), ((6, 2), 11.0), ((5, 1), 17.9048), ((6, 1), 13.5), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714), ((3, 1), 22.2857)]
+    Selected Next Node: (6, 4)
+
+  Iteration 13:
+    Current Node: (6, 4)
+    Heuristic Value: 9.0
+    Explored Nodes Count: 12
+    Frontier Size: 9
+    Neighbors Evaluated:
+      → North: (5, 4), h=10.4167
+      → East: (6, 5), h=4.5
+    Frontier Nodes (top 10): [((6, 4), 9.0), ((6, 2), 11.0), ((5, 1), 17.9048), ((6, 1), 13.5), ((2, 1), 26.7143), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714), ((3, 1), 22.2857)]
+    Selected Next Node: (6, 5)
+
+  Iteration 14:
+    Current Node: (6, 5)
+    Heuristic Value: 4.5
+    Explored Nodes Count: 13
+    Frontier Size: 10
+    Neighbors Evaluated:
+      → North: (5, 5), h=6.6667
+      → East: (6, 6), h=2.0
+      → South: (7, 5), h=2.0
+    Frontier Nodes (top 10): [((6, 5), 4.5), ((5, 4), 10.4167), ((5, 1), 17.9048), ((6, 1), 13.5), ((6, 2), 11.0), ((1, 1), 29.1429), ((4, 1), 19.6071), ((0, 1), 31.5714), ((3, 1), 22.2857), ((2, 1), 26.7143)]
+    Selected Next Node: (6, 6)
+
+  Iteration 15:
+    Current Node: (6, 6)
+    Heuristic Value: 2.0
+    Explored Nodes Count: 14
+    Frontier Size: 12
+    Neighbors Evaluated:
+      → North: (5, 6), h=4.5
+      → East: (6, 7), h=1.0
+      → South: (7, 6), h=1.0
+    Selected Next Node: (6, 7)
+
+  Iteration 16:
+    Current Node: (6, 7)
+    Heuristic Value: 1.0
+    Explored Nodes Count: 15
+    Frontier Size: 14
+    Neighbors Evaluated:
+      → North: (5, 7), h=2.0
+      → South: (7, 7), h=0.0
+    Selected Next Node: (7, 7)
+
+  Iteration 17:
+    Current Node: (7, 7)
+    Heuristic Value: 0.0
+    Explored Nodes Count: 16
+    Frontier Size: 15
+    Selected Next Node: GOAL REACHED
+======================================================================
+  A* SEARCH WITH HEURISTIC h1 (EUCLIDEAN DISTANCE)
+======================================================================
+
+  ✓ Path FOUND using A* with h1
+
+  Path (17 nodes, 16 moves):
+  ────────────────────────────────────────
+    Step  0: (0,0) [Start] cost=1
+    Step  1: (1,0) [Passable] cost=1 <- South
+    Step  2: (2,0) [Passable] cost=1 <- South
+    Step  3: (3,0) [Passable] cost=1 <- South
+    Step  4: (3,1) [Passable] cost=1 <- East
+    Step  5: (3,2) [Passable] cost=1 <- East
+    Step  6: (3,3) [Passable] cost=1 <- East
+    Step  7: (2,3) [Passable] cost=1 <- North
+    Step  8: (2,4) [Passable] cost=1 <- East
+    Step  9: (2,5) [Passable] cost=1 <- East
+    Step 10: (3,5) [Passable] cost=1 <- South
+    Step 11: (4,5) [Passable] cost=1 <- South
+    Step 12: (4,6) [Passable] cost=1 <- East
+    Step 13: (4,7) [Passable] cost=1 <- East
+    Step 14: (5,7) [Passable] cost=1 <- South
+    Step 15: (6,7) [Passable] cost=1 <- South
+    Step 16: (7,7) [Goal] cost=1 <- South
+
+  Penalties Incurred:
+    Weather Zones Crossed: 0
+    Weather Penalty Total: 0
+    No-Fly Zones Crossed: 0
+======================================================================
+  METRICS COMPARISON TABLE
+======================================================================
++-----------------------+-----------+-----------+---------+
+| Metric                | GBFS-h1   | GBFS-h2   | A*-h1   |
++=======================+===========+===========+=========+
+| Nodes Expanded        | 15        | 17        | 36      |
++-----------------------+-----------+-----------+---------+
+| Runtime (ms)          | 0.1152    | 0.1638    | 0.1347  |
++-----------------------+-----------+-----------+---------+
+| Memory Usage          | 28        | 31        | 47      |
++-----------------------+-----------+-----------+---------+
+| Total Path Cost       | 24        | 23        | 17      |
++-----------------------+-----------+-----------+---------+
+| Path Length           | 14        | 16        | 16      |
++-----------------------+-----------+-----------+---------+
+| Heuristic             | GBFS-h1   | GBFS-h2   | A*-h1   |
++-----------------------+-----------+-----------+---------+
+| Weather Zones Crossed | 3         | 2         | 0       |
++-----------------------+-----------+-----------+---------+
+| Weather Penalty       | 12        | 8         | 0       |
++-----------------------+-----------+-----------+---------+
+======================================================================
+  TRAP IDENTIFICATION
+======================================================================
+
+  A trap is identified when the agent must backtrack - the next node
+  selected from the frontier is NOT adjacent to the current node,
+  indicating the agent explored a dead-end or inefficient region.
+
+  No trap situations detected.
+======================================================================
+  GBFS vs A* COMPARISON (Heuristic h1)
+======================================================================
+
+  ┌──────────────────────┬────────────────────┬────────────────────┐
+  │ Criterion            │ GBFS (h1)          │ A* (h1)            │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Complete?            │ Yes (closed set)   │ Yes                │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Optimal?             │ No                 │ Yes                │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Nodes Expanded       │ 15                 │ 36                 │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Runtime (ms)         │ 0.1152             │ 0.1347             │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Memory Usage         │ 28                 │ 47                 │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Total Path Cost      │ 24                 │ 17                 │
+  ├──────────────────────┼────────────────────┼────────────────────┤
+  │ Path Length          │ 14                 │ 16                 │
+  └──────────────────────┴────────────────────┴────────────────────┘
+
+  Analysis:
+  • A* is COMPLETE: Guaranteed to find a path if one exists.
+  • A* is OPTIMAL: Finds the lowest-cost path with admissible heuristic.
+  • GBFS is COMPLETE with closed set (for finite graphs) but NOT optimal.
+  • GBFS is generally FASTER as it only uses h(n) for expansion ordering.
+  • A* explores more nodes but guarantees optimality.
+  • GBFS may find a sub-optimal path faster due to greedy expansion.
+
+======================================================================
+  PEAS COMPONENTS
+======================================================================
+
+  ┌─────────────────┬────────────────────────────────────────────────────────┐
+  │ Component       │ Description                                            │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Performance     │ • Minimize path cost (transition costs)                │
+  │ Measure         │ • Reach the goal (External Signal Source)              │
+  │                 │ • Minimize nodes expanded                              │
+  │                 │ • Avoid Weather Hazards (reduce penalties)             │
+  │                 │ • Never enter No-Fly Zones                             │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Environment     │ • 8×8 discrete grid (airspace)                        │
+  │                 │ • Static obstacles: No-Fly Zones (impassable)          │
+  │                 │ • Hazards: Weather regions (passable, penalty +4)      │
+  │                 │ • Fully observable (grid is known)                     │
+  │                 │ • Deterministic (actions have predictable outcomes)    │
+  │                 │ • Sequential (decisions depend on previous state)      │
+  │                 │ • Single agent                                         │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Actuators       │ • Movement controller (North, South, East, West)      │
+  │                 │ • Navigation system for path execution                 │
+  │                 │ • Signal interception mechanism at goal                │
+  ├─────────────────┼────────────────────────────────────────────────────────┤
+  │ Sensors         │ • GPS/Position sensor (current coordinates)           │
+  │                 │ • Grid map sensor (full environment knowledge)         │
+  │                 │ • Obstacle detector (No-Fly Zone identification)       │
+  │                 │ • Weather sensor (Hazard zone detection)               │
+  │                 │ • Goal detector (External Signal Source locator)       │
+  └─────────────────┴────────────────────────────────────────────────────────┘
+  
+  Agent Type: Goal-based, informed search agent
+  Environment Type: Fully Observable, Deterministic, Sequential, Static, 
+                    Discrete, Single-agent
+
+======================================================================
+  COMPLEXITY ANALYSIS
+======================================================================
+
+  ┌─────────────────────┬───────────────────────┬───────────────────────────┐
+  │ Aspect              │ GBFS                  │ A*                        │
+  ├─────────────────────┼───────────────────────┼───────────────────────────┤
+  │ Time Complexity     │ O(b^m) worst case     │ O(b^d) with admissible h  │
+  │                     │ O(b*d) best case      │                           │
+  ├─────────────────────┼───────────────────────┼───────────────────────────┤
+  │ Space Complexity    │ O(b^m) worst case     │ O(b^d)                    │
+  │                     │ O(b*d) best case      │                           │
+  ├─────────────────────┼───────────────────────┼───────────────────────────┤
+  │ Completeness        │ No (can get stuck     │ Yes (with finite costs    │
+  │                     │ in loops w/o closed   │ and admissible heuristic) │
+  │                     │ set; Yes with closed) │                           │
+  ├─────────────────────┼───────────────────────┼───────────────────────────┤
+  │ Optimality          │ No (does not consider │ Yes (with admissible and  │
+  │                     │ path cost g(n))       │ consistent heuristic)     │
+  └─────────────────────┴───────────────────────┴───────────────────────────┘
+
+  Where: b = branching factor (max 4 for orthogonal movement)
+         m = maximum depth of search tree
+         d = depth of optimal solution
+
+  For this 8×8 grid:
+  • Maximum possible nodes: 64 (8×8)
+  • Effective nodes (excluding No-Fly): 64 - 8 = 56
+  • Branching factor: ≤ 4 (orthogonal moves)
+  • GBFS with closed set is complete for finite graphs
+
+======================================================================
+  HEURISTIC FUNCTION ANALYSIS
+======================================================================
+
+  Comparison of Heuristic Functions:
+  ─────────────────────────────────────────────────────────────────
+  
+  h1 (Euclidean Distance):
+    • Path Cost: 24
+    • Path Length: 14 moves
+    • Nodes Expanded: 15
+    • Characteristics: Simple geometric distance, does not account
+      for obstacles or terrain costs in the path.
+    
+  h2 (Bounding-Box Risk-Weighted):
+    • Path Cost: 23
+    • Path Length: 16 moves
+    • Nodes Expanded: 17
+    • Characteristics: Future-aware heuristic that considers the
+      density of obstacles between current position and goal.
+      Multiplies Manhattan distance by average cell cost in the
+      bounding box.
+  
+  Conclusion:
+  
+    h2 (Bounding-Box) achieves a lower path cost.
+    h1 expands fewer or equal nodes (more efficient search).
+
+    h2 is generally better for environments with clustered obstacles
+    as it accounts for risk density. h1 is simpler but may lead the
+    agent through hazardous regions it cannot foresee.
+
+======================================================================
+  CONCLUSION
+======================================================================
+
+  GBFS Algorithm Performance Analysis:
+  ─────────────────────────────────────────────────────────────────
+  
+  Optimality:
+  • GBFS is NOT optimal. It only considers h(n) for node selection,
+    ignoring the actual cost g(n) accumulated so far. This means it
+    may find a path that appears promising heuristically but has a
+    higher total transition cost than the optimal path.
+  • In this environment, GBFS may route through Weather Hazards if
+    they appear closer to the goal heuristically.
+  
+  Completeness:
+  • GBFS with a closed set (explored set) IS complete for finite
+    graphs. Since our 8×8 grid is finite, GBFS will find a path if
+    one exists.
+  • Without a closed set, GBFS can get stuck in infinite loops.
+  
+  Practical Performance:
+  • GBFS is faster than A* in practice for this problem as it
+    expands fewer nodes by greedily pursuing the most promising
+    direction.
+  • The trade-off is that the path found may not be optimal.
+  • For real-time drone navigation, GBFS may be preferred when
+    speed is critical, while A* is preferred when fuel/cost
+    optimization is paramount.
+  
+  Recommendation:
+  • Use A* when optimality is required (mission-critical paths).
+  • Use GBFS when fast response time is needed and sub-optimality
+    is acceptable.
+  • h2 provides better obstacle awareness than h1, making it
+    more suitable for environments with clustered hazards.
+

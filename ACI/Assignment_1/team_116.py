@@ -405,6 +405,7 @@ def astar(grid, heuristic_func, heuristic_name="h1"):
         explored.add(current)
 
         neighbors = grid.get_neighbors(current[0], current[1])
+        neighbor_info = []
 
         for nr, nc, direction in neighbors:
             neighbor = (nr, nc)
@@ -421,6 +422,19 @@ def astar(grid, heuristic_func, heuristic_name="h1"):
                 heapq.heappush(open_list, (f_n, counter, neighbor))
                 counter += 1
                 open_set.add(neighbor)
+                neighbor_info.append((neighbor, round(h_n, 4), direction))
+
+        iteration_info['neighbors_evaluated'] = neighbor_info
+        iteration_info['frontier_nodes'] = [
+            (node, round(f, 4)) for f, _, node in open_list
+        ]
+
+        # Determine selected next node
+        if open_list:
+            next_f, _, next_node = open_list[0]
+            iteration_info['selected_next'] = next_node
+        else:
+            iteration_info['selected_next'] = None
 
         iteration_details.append(iteration_info)
 
@@ -608,7 +622,7 @@ def visualize_grid(grid, path=None, explored=None, title="Grid Environment",
     plt.close()
 
 
-def visualize_comparison(metrics_list, title="Algorithm Comparison"):
+def visualize_comparison(metrics_list, title="Algorithm Comparison", save_dir=None):
     """Create comparison bar charts for different algorithms/heuristics."""
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
     fig.suptitle(title, fontsize=16, fontweight='bold')
@@ -653,11 +667,12 @@ def visualize_comparison(metrics_list, title="Algorithm Comparison"):
     axes[1, 2].set_ylabel('Count')
 
     plt.tight_layout()
-    plt.savefig('comparison_chart.png', dpi=150, bbox_inches='tight')
+    out_path = os.path.join(save_dir, 'comparison_chart.png') if save_dir else 'comparison_chart.png'
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close()
 
 
-def visualize_heuristic_progression(h_values_h1, h_values_h2, title="Heuristic Values Along Path"):
+def visualize_heuristic_progression(h_values_h1, h_values_h2, title="Heuristic Values Along Path", save_dir=None):
     """Visualize heuristic values at each step for both heuristics."""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
     fig.suptitle(title, fontsize=14, fontweight='bold')
@@ -683,11 +698,12 @@ def visualize_heuristic_progression(h_values_h1, h_values_h2, title="Heuristic V
     ax2.legend()
 
     plt.tight_layout()
-    plt.savefig('heuristic_progression.png', dpi=150, bbox_inches='tight')
+    out_path = os.path.join(save_dir, 'heuristic_progression.png') if save_dir else 'heuristic_progression.png'
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close()
 
 
-def visualize_heuristic_vs_time(h_values_h1, h_values_h2, runtime_h1, runtime_h2):
+def visualize_heuristic_vs_time(h_values_h1, h_values_h2, runtime_h1, runtime_h2, save_dir=None):
     """Visualize heuristic values vs estimated time progression."""
     fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -710,7 +726,8 @@ def visualize_heuristic_vs_time(h_values_h1, h_values_h2, runtime_h1, runtime_h2
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig('heuristic_vs_time.png', dpi=150, bbox_inches='tight')
+    out_path = os.path.join(save_dir, 'heuristic_vs_time.png') if save_dir else 'heuristic_vs_time.png'
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close()
 
 
@@ -739,7 +756,11 @@ def print_iteration_details(iteration_details, algorithm_name):
     for detail in iteration_details:
         print(f"\n  Iteration {detail['iteration']}:")
         print(f"    Current Node: {detail['current_node']}")
-        print(f"    Heuristic Value: {detail['h_value']}")
+        # Show f and g values for A* iterations
+        if 'f_value' in detail:
+            print(f"    f(n) = g(n) + h(n): {detail['f_value']} = {detail['g_value']} + {detail['h_value']}")
+        else:
+            print(f"    Heuristic Value: {detail['h_value']}")
         print(f"    Explored Nodes Count: {detail['explored_count']}")
         print(f"    Frontier Size: {detail['frontier_size']}")
 
@@ -748,8 +769,9 @@ def print_iteration_details(iteration_details, algorithm_name):
             for neighbor, h_val, direction in detail['neighbors_evaluated']:
                 print(f"      → {direction}: {neighbor}, h={h_val}")
 
-        if 'frontier_nodes' in detail and len(detail['frontier_nodes']) <= 10:
-            print(f"    Frontier Nodes (top 10): {detail['frontier_nodes'][:10]}")
+        # Always print all frontier nodes (required by assignment)
+        if 'frontier_nodes' in detail:
+            print(f"    Frontier Nodes: {detail['frontier_nodes']}")
 
         print(f"    Selected Next Node: {detail['selected_next']}")
 
@@ -999,6 +1021,8 @@ def main():
         else:
             print("  ✗ No path found using A*!")
 
+        print_iteration_details(result_astar['iteration_details'], "A* h1")
+
         # ====================================================
         # SECTION 5: Metrics Comparison Table
         # ====================================================
@@ -1206,7 +1230,8 @@ def main():
         visualize_heuristic_progression(
             result_h1['h_values_along_path'],
             result_h2['h_values_along_path'],
-            title="Heuristic Values Along Search Path"
+            title="Heuristic Values Along Search Path",
+            save_dir=script_dir
         )
 
     # 6. Heuristic vs Time
@@ -1215,11 +1240,12 @@ def main():
             result_h1['h_values_along_path'],
             result_h2['h_values_along_path'],
             result_h1['metrics']['runtime_ms'],
-            result_h2['metrics']['runtime_ms']
+            result_h2['metrics']['runtime_ms'],
+            save_dir=script_dir
         )
 
     # 7. Comparison charts
-    visualize_comparison(all_metrics, "Algorithm & Heuristic Comparison")
+    visualize_comparison(all_metrics, "Algorithm & Heuristic Comparison", save_dir=script_dir)
 
     # 8. Heuristic value heatmaps
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
