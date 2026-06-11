@@ -1,0 +1,180 @@
+﻿
+Downloading required NLTK resources...
+
+======================================================================
+TASK 1 : DATASET LOADING
+======================================================================
+
+Total sentences available in corpus : 71532
+Using first 10,000 sentences        : 10000
+Training sentences (80%)           : 8000
+Testing sentences (19%)            : 2000
+
+
+======================================================================
+TASK 2 : POS TAGGING
+======================================================================
+
+POS tagging completed.
+
+Sample Tagged Sentence:
+
+[('plot', 'NN'), (':', ':'), ('two', 'CD'), ('teen', 'NN'), ('couples', 'NNS'), ('go', 'VBP'), ('to', 'TO'), ('a', 'DT'), ('church', 'NN'), ('party', 'NN'), (',', ','), ('drink', 'NN'), ('and', 'CC'), ('then', 'RB'), ('drive', 'NN'), ('.', '.')]
+
+Calculating Initial Probabilities...
+
+Sample Initial Probabilities
+NN       : 0.187000
+:        : 0.001125
+CD       : 0.012125
+NNS      : 0.025250
+VBP      : 0.002250
+TO       : 0.004875
+DT       : 0.171750
+,        : 0.005250
+CC       : 0.054750
+RB       : 0.108875
+
+Calculating Transition Probabilities...
+
+Sample Transition Probabilities
+('<START>', 'NN') -> 0.187000
+('NN', ':') -> 0.012816
+(':', 'CD') -> 0.030952
+('CD', 'NN') -> 0.171447
+('NN', 'NNS') -> 0.038718
+('NNS', 'VBP') -> 0.112156
+('VBP', 'TO') -> 0.055743
+('TO', 'DT') -> 0.125184
+('DT', 'NN') -> 0.518937
+('NN', 'NN') -> 0.131189
+
+Calculating Emission Probabilities...
+
+Sample Emission Probabilities
+('NN', 'plot') -> 0.006526
+(':', ':') -> 0.416667
+('CD', 'two') -> 0.119296
+('NN', 'teen') -> 0.000067
+('NNS', 'couples') -> 0.000570
+('VBP', 'go') -> 0.007770
+('TO', 'to') -> 0.997644
+('DT', 'a') -> 0.258770
+('NN', 'church') -> 0.000101
+('NN', 'party') -> 0.000505
+
+
+======================================================================
+TASK 3 : VITERBI IMPLEMENTATION
+======================================================================
+Viterbi decoder implemented from scratch.
+
+Algorithm steps:
+  1. Initialize: score each tag for the first word using P(tag|<START>) x P(word|tag)
+  2. Recurse: for each next word, keep the best path to every tag
+  3. Terminate: return the tag sequence ending at the highest-scoring final tag
+
+Sample decode on a test sentence:
+  Input : we want to see the goddamn butterfly !
+  Output: PRP VBP TO VB DT JJ NN .
+  Gold  : PRP VBP TO VB DT NN NN .
+
+Word-level comparison:
+  we            predicted=PRP     gold=PRP     [OK]
+  want          predicted=VBP     gold=VBP     [OK]
+  to            predicted=TO      gold=TO      [OK]
+  see           predicted=VB      gold=VB      [OK]
+  the           predicted=DT      gold=DT      [OK]
+  goddamn       predicted=JJ      gold=NN      [DIFF]
+  butterfly     predicted=NN      gold=NN      [OK]
+  !             predicted=.       gold=.       [OK]
+
+
+======================================================================
+TASK 4 : DOMAIN SPECIFIC SENTENCE
+======================================================================
+
+Input Sentence:
+The movie was absolutely fantastic and engaging
+
+Running Viterbi Decoder...
+
+======================================================================
+FINAL PREDICTED TAG SEQUENCE
+======================================================================
+The             --> DT
+movie           --> NN
+was             --> VBD
+absolutely      --> RB
+fantastic       --> JJ
+and             --> CC
+engaging        --> VBG
+
+
+======================================================================
+VITERBI MATRIX (SLICE)
+======================================================================
+                      NN             :  ...            CC            RB
+The         1.870000e-07  1.125000e-09  ...  5.475000e-08  1.088750e-07
+movie       9.967857e-04  7.571181e-11  ...  5.948785e-11  2.011771e-09
+was         1.307678e-10  1.277500e-11  ...  4.392456e-11  2.290112e-11
+absolutely  3.457706e-13  7.153874e-15  ...  4.292324e-14  1.283884e-09
+fantastic   2.800782e-17  6.785399e-18  ...  1.458139e-17  1.237253e-16
+and         3.015463e-20  2.529280e-22  ...  1.379921e-15  8.337255e-22
+engaging    7.016272e-21  8.376696e-25  ...  2.792232e-25  1.563650e-22
+
+[7 rows x 10 columns]
+
+[Showing 10 of 44 tag columns]
+
+
+======================================================================
+TASK 5 : EXPLANATION
+======================================================================
+
+DYNAMIC PROGRAMMING NATURE OF VITERBI
+-------------------------------------
+
+The Viterbi algorithm uses dynamic programming. Instead of evaluating
+every possible POS tag sequence, it stores the best probability of
+reaching each tag at every word position in the Viterbi matrix.
+
+Each cell depends only on:
+1. The best previous state at position t - 1
+2. The transition probability P(tag_t | tag_{t-1})
+3. The emission probability P(word_t | tag_t)
+
+Subproblems overlap: many tag sequences share the same prefix. Viterbi
+reuses previously computed best-path scores rather than recomputing them,
+which avoids redundant work and keeps runtime polynomial.
+
+
+WHY VITERBI IS PREFERRED OVER EXHAUSTIVE SEARCH
+------------------------------------------------
+
+For this example sentence:
+  Sentence length (N) = 7
+  Number of POS tags (T) = 44
+
+Exhaustive search must score every possible tag sequence:
+  Complexity: T^N = 44^7 = 319,277,809,664 sequences
+
+Viterbi considers only the best partial path to each tag at each step:
+  Complexity: O(N x T^2) = 7 x 44^2 = 13,552 operations
+
+Viterbi is dramatically faster while still returning the globally most
+probable tag sequence under the Markov assumptions of an HMM.
+
+
+
+======================================================================
+ASSIGNMENT SUMMARY
+======================================================================
+Total Sentences Used        : 10000
+Training Sentences          : 8000
+Testing Sentences           : 2000
+Unique POS Tags             : 44
+Transition Probabilities    : 1154
+Emission Probabilities      : 19242
+
+Assignment completed successfully.
