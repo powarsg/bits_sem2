@@ -97,22 +97,6 @@ raw CSV path
 - **Recall:** True positives / All actual positives (captures valid approvals)
 - **F1 Score:** Harmonic mean of precision and recall
 - **MCC:** Matthews Correlation Coefficient (-1 to +1, works well with imbalanced data)
-
----
-
-## d. Observations on Model Performance
-
-| ML Model Name | Observation about model performance |
-|---|---|
-| **Logistic Regression** | Moderate baseline (89.27% accuracy). Interpretable with good AUC (0.9507), but linear assumptions limit non-linear pattern capture. Suitable for simple baseline comparisons. |
-
-
-### Key Learning - Imbalanced Data:
-- Accuracy alone is misleading (77.8% vs 22.2% class distribution)
-- AUC, F1, and MCC are more informative metrics for imbalanced datasets
-- Ensemble methods (Random Forest, XGBoost) naturally handle class imbalance better
-- Trade-off between precision and recall critical in loan approval decisions
-
 ---
 
 ## Repository Structure
@@ -135,30 +119,19 @@ project-folder/
 
 ## How to Use
 
-**Train Models (Optional):**
+> **Architecture note:** The project uses **CQRS** (Command Query Responsibility Segregation).  
+> `train_loan_model.py` is the **Command** (writes model artifacts).  
+> `app.py` is the **Query** (reads artifacts, serves predictions). They share no memory; the filesystem is the only boundary between them.
+
+**Command — Train the model:**
 ```bash
 cd model/
-python3 train_loan_model.py
+python3 train_loan_model.py   # writes *.joblib + CSV artifacts
 ```
 
-**Run Streamlit App:**
+**Query — Run the Streamlit app:**
 ```bash
 pip install -r requirements.txt
-streamlit run app.py
+streamlit run app.py          # reads artifacts, serves predictions
 ```
-
-**Access Live App:**
-- Local: `http://localhost:8501`
-- Cloud: Deployed on Streamlit Community Cloud
- `https://powarsg-ml-classification-models.streamlit.app/`
-
-## Streamlit App Features
-
-✅ Model selection dropdown (6 models)  
-✅ CSV upload for test data  
-✅ Performance metrics display  
-✅ Confusion matrix visualization  
-✅ Classification report  
-✅ Model comparison charts  
-✅ Sample predictions  
 

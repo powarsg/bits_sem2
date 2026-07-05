@@ -1,27 +1,41 @@
 """
-Loan Status Classification Model — Pipe and Filter Architecture
-===============================================================
-Each function below is a FILTER that does exactly one transformation.
-The return value of each filter is the PIPE (data payload) that flows
-into the next filter.
+╔══════════════════════════════════════════════════════════════╗
+║          CQRS PATTERN — COMMAND SIDE                         ║
+║  Responsibility : WRITE / mutate the model store             ║
+║  Triggers       : Run manually (python3 train_loan_model.py) ║
+║  Output         : *.joblib artifacts + CSV reports           ║
+╚══════════════════════════════════════════════════════════════╝
+
+CQRS Separation
+---------------
+COMMAND (this file)          │  QUERY (app.py)
+─────────────────────────────┼───────────────────────────────
+Trains the model             │  Loads trained artifacts
+Encodes & scales features    │  Encodes & scales user input
+Writes *.joblib to disk      │  Reads *.joblib from disk
+Writes CSV reports           │  Reads CSV reports
+No HTTP / UI concerns        │  No training logic
+Run once (or on demand)      │  Runs on every user request
+
+Internally this file also demonstrates the Pipe and Filter pattern:
+    Each function is a FILTER; its return value is the PIPE flowing into the next filter.
 
 Pipeline flow:
-  raw CSV path
-      |-- [FILTER 1: load_data]           --> raw DataFrame
-      |-- [FILTER 2: drop_missing]        --> cleaned DataFrame
-      |-- [FILTER 3: remove_outliers]     --> outlier-free DataFrame
-      |-- [FILTER 4: split_features_target] --> (X, y, categorical_cols, numerical_cols)
-      |-- [FILTER 5: split_datasets]      --> (X_train_orig, X_val_orig, X_test_orig,
-      |                                        y_train, y_val, y_test)
-      |-- [FILTER 6: fit_label_encoders]  --> (X_train_encoded, label_encoders)
-      |-- [FILTER 7: apply_label_encoders]--> (X_val_encoded, X_test_encoded)
-      |-- [FILTER 8: fit_scaler]          --> (X_train_scaled, scaler)
-      |-- [FILTER 9: apply_scaler]        --> (X_val_scaled, X_test_scaled)
-      |-- [FILTER 10: save_test_data]     --> test_data.csv  (side-effect)
-      |-- [FILTER 11: train_model]        --> trained model
-      |-- [FILTER 12: evaluate_model]     --> metrics dict
-      |-- [FILTER 13: save_artifacts]     --> *.joblib files (side-effect)
-      |-- [FILTER 14: save_results]       --> model_results.csv (side-effect)
+    raw CSV path
+        |-- [FILTER 1: load_data]             --> raw DataFrame
+        |-- [FILTER 2: drop_missing]          --> cleaned DataFrame
+        |-- [FILTER 3: remove_outliers]       --> outlier-free DataFrame
+        |-- [FILTER 4: split_features_target] --> (X, y, cat_cols, num_cols)
+        |-- [FILTER 5: split_datasets]        --> train / val / test splits
+        |-- [FILTER 6: fit_label_encoders]    --> (X_train_encoded, encoders)
+        |-- [FILTER 7: apply_label_encoders]  --> (X_val_encoded, X_test_encoded)
+        |-- [FILTER 8: fit_scaler]            --> (X_train_scaled, scaler)
+        |-- [FILTER 9: apply_scaler]          --> (X_val_scaled, X_test_scaled)
+        |-- [FILTER 10: save_test_data]       --> test_data.csv  (side-effect)
+        |-- [FILTER 11: train_model]          --> trained model
+        |-- [FILTER 12: evaluate_model]       --> metrics dict
+        |-- [FILTER 13: save_artifacts]       --> *.joblib files (side-effect)
+        |-- [FILTER 14: save_results]         --> model_results.csv (side-effect)
 """
 
 import pandas as pd
@@ -269,8 +283,11 @@ def save_results(results: list, output_path: str = 'model_results.csv') -> str:
 
 
 # ===========================================================
-# PIPELINE ORCHESTRATOR
-# Connects every filter with explicit pipes between them.
+# CQRS COMMAND HANDLER
+# run_pipeline() is the single entry-point for the Command side.
+# It orchestrates all filters and WRITES state to the model store
+# (*.joblib files + CSV reports). The Query side (app.py) will
+# later READ from that store — the two sides never share memory.
 # ===========================================================
 def run_pipeline(data_path: str = 'loan_data.csv'):
     print("="*60)

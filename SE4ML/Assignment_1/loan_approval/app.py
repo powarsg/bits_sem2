@@ -1,6 +1,28 @@
 """
-Streamlit Web Application for Loan Status Classification
-Interactive demo of Ml Model trained on loan approval prediction
+╔══════════════════════════════════════════════════════════════╗
+║          CQRS PATTERN — QUERY SIDE                          ║
+║  Responsibility : READ from the model store + predict       ║
+║  Triggers       : Every user interaction in the browser     ║
+║  Input          : *.joblib artifacts written by Command side ║
+╚══════════════════════════════════════════════════════════════╝
+
+CQRS Separation
+---------------
+  COMMAND (train_loan_model.py)  │  QUERY (this file)
+  ───────────────────────────────┼─────────────────────────────
+  Trains the model               │  Loads trained artifacts
+  Encodes & scales features      │  Encodes & scales user input
+  WRITES *.joblib to disk        │  READS *.joblib from disk
+  WRITES CSV reports             │  READS CSV reports
+  No HTTP / UI concerns          │  No training logic
+  Run once (or on demand)        │  Runs on every user request
+
+Query flow inside this file:
+  1. QUERY STORE   — load artifacts from disk (cached)
+  2. QUERY PARAMS  — collect user inputs (sidebar)
+  3. QUERY PROCESSOR — preprocess uploaded / default data
+  4. QUERY EXECUTION — model.predict() → predictions
+  5. QUERY RESULT  — render metrics, confusion matrix, table
 """
 
 import streamlit as st
@@ -52,7 +74,13 @@ loan approval status. Explore model performance, upload test data, and generate 
 
 st.divider()
 
-# Load models and preprocessors
+# ──────────────────────────────────────────────────────────────
+# CQRS — QUERY STORE
+# Read-only access to artifacts produced by the Command side.
+# All loaders are cached so the store is only read once per session.
+# This file NEVER writes to these artifacts — strict CQRS boundary.
+# ──────────────────────────────────────────────────────────────
+
 @st.cache_resource
 def load_models():
     models = {
@@ -81,7 +109,12 @@ scaler, label_encoders, feature_names = load_preprocessors()
 test_data = load_test_data()
 results_df = load_results()
 
-# Sidebar
+# ──────────────────────────────────────────────────────────────
+# CQRS — QUERY PARAMETERS
+# Collect all user-supplied inputs that shape what the query returns.
+# Nothing is written to disk here; selections only affect this session.
+# ──────────────────────────────────────────────────────────────
+
 st.sidebar.header("📊 Configuration")
 
 # Section 0: Test Data Download
@@ -143,7 +176,12 @@ else:
 
 st.sidebar.divider()
 
-# Preprocess data: Apply label encoders, then scaler
+# ──────────────────────────────────────────────────────────────
+# CQRS — QUERY PROCESSOR
+# Transforms raw user input into the format the model expects.
+# Uses the same encoders/scaler fitted by the Command side — read-only.
+# ──────────────────────────────────────────────────────────────
+
 @st.cache_data
 def preprocess_data(data, _encoders, _scaler, feature_list):
     """Apply label encoding and scaling to data"""
@@ -249,12 +287,17 @@ with col2:
 
 st.divider()
 
-# Section: Predictions on Test Data
+# ──────────────────────────────────────────────────────────────
+# CQRS — QUERY EXECUTION
+# The single predict() call is the Query result boundary.
+# model.predict() is stateless and read-only — CQRS Query handler.
+# ──────────────────────────────────────────────────────────────
+
 st.subheader("🔮 Model Predictions on Test Data")
 
 model = models[selected_model]
 
-# Use already preprocessed data
+# Execute the Query: produce predictions from preprocessed input
 y_pred = model.predict(data_preprocessed)
 
 # Determine if we can calculate confusion matrix
