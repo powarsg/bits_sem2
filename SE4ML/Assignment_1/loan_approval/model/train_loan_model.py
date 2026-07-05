@@ -1,7 +1,27 @@
 """
-Loan Status Classification Model
-Trains ML model with proper preprocessing pipeline
-Saves test_data.csv with ORIGINAL (non-encoded) categorical values for re-upload
+Loan Status Classification Model — Pipe and Filter Architecture
+===============================================================
+Each function below is a FILTER that does exactly one transformation.
+The return value of each filter is the PIPE (data payload) that flows
+into the next filter.
+
+Pipeline flow:
+  raw CSV path
+      |-- [FILTER 1: load_data]           --> raw DataFrame
+      |-- [FILTER 2: drop_missing]        --> cleaned DataFrame
+      |-- [FILTER 3: remove_outliers]     --> outlier-free DataFrame
+      |-- [FILTER 4: split_features_target] --> (X, y, categorical_cols, numerical_cols)
+      |-- [FILTER 5: split_datasets]      --> (X_train_orig, X_val_orig, X_test_orig,
+      |                                        y_train, y_val, y_test)
+      |-- [FILTER 6: fit_label_encoders]  --> (X_train_encoded, label_encoders)
+      |-- [FILTER 7: apply_label_encoders]--> (X_val_encoded, X_test_encoded)
+      |-- [FILTER 8: fit_scaler]          --> (X_train_scaled, scaler)
+      |-- [FILTER 9: apply_scaler]        --> (X_val_scaled, X_test_scaled)
+      |-- [FILTER 10: save_test_data]     --> test_data.csv  (side-effect)
+      |-- [FILTER 11: train_model]        --> trained model
+      |-- [FILTER 12: evaluate_model]     --> metrics dict
+      |-- [FILTER 13: save_artifacts]     --> *.joblib files (side-effect)
+      |-- [FILTER 14: save_results]       --> model_results.csv (side-effect)
 """
 
 import pandas as pd
@@ -10,142 +30,314 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
-    accuracy_score, roc_auc_score, precision_score, recall_score, 
+    accuracy_score, roc_auc_score, precision_score, recall_score,
     f1_score, matthews_corrcoef
 )
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
-# Load dataset
-print("Loading loan_data.csv...")
-df = pd.read_csv('loan_data.csv')
 
-print(f"Dataset shape: {df.shape}")
-print(f"Target variable distribution:\n{df['loan_status'].value_counts()}")
+# ===========================================================
+# FILTER 1 — Load raw data from disk
+# PIPE IN  : file path (str)
+# PIPE OUT : raw DataFrame
+# ===========================================================
+def load_data(filepath: str) -> pd.DataFrame:
+    print(f"[FILTER 1] Loading dataset from '{filepath}' ...")
+    df = pd.read_csv(filepath)
+    print(f"           Shape: {df.shape}")
+    print(f"           Target distribution:\n{df['loan_status'].value_counts()}")
+    return df
 
-# Data Preprocessing
-print("\n" + "="*60)
-print("DATA PREPROCESSING")
-print("="*60)
 
-# Handle missing values
-print(f"\nMissing values before handling:\n{df.isnull().sum()}")
-df = df.dropna()
-print(f"\nDataset shape after dropping NAs: {df.shape}")
+# ===========================================================
+# FILTER 2 — Drop rows with missing values
+# PIPE IN  : raw DataFrame
+# PIPE OUT : DataFrame without NaN rows
+# ===========================================================
+def drop_missing(df: pd.DataFrame) -> pd.DataFrame:
+    print("\n[FILTER 2] Dropping missing values ...")
+    print(f"           Missing counts before:\n{df.isnull().sum()}")
+    df_clean = df.dropna()
+    print(f"           Shape after drop: {df_clean.shape}")
+    return df_clean
 
-# Remove age outliers
-df = df[df['person_age'] <= 120]
-print(f"Dataset shape after removing age outliers: {df.shape}")
 
-# Separate features and target
-X = df.drop('loan_status', axis=1)
-y = df['loan_status']
+# ===========================================================
+# FILTER 3 — Remove obvious outliers (age > 120)
+# PIPE IN  : cleaned DataFrame
+# PIPE OUT : outlier-free DataFrame
+# ===========================================================
+def remove_outliers(df: pd.DataFrame) -> pd.DataFrame:
+    print("\n[FILTER 3] Removing age outliers (person_age > 120) ...")
+    df_filtered = df[df['person_age'] <= 120]
+    print(f"           Shape after outlier removal: {df_filtered.shape}")
+    return df_filtered
 
-# Identify categorical and numerical columns
-categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
-numerical_cols = X.select_dtypes(include=['float64', 'int64']).columns.tolist()
 
-print(f"\nCategorical columns: {categorical_cols}")
-print(f"Numerical columns: {numerical_cols}")
+# ===========================================================
+# FILTER 4 — Separate features (X) from target (y)
+# PIPE IN  : clean DataFrame
+# PIPE OUT : (X, y, categorical_cols, numerical_cols)
+# ===========================================================
+def split_features_target(df: pd.DataFrame, target_col: str = 'loan_status'):
+    print(f"\n[FILTER 4] Splitting features and target ('{target_col}') ...")
+    X = df.drop(target_col, axis=1)
+    y = df[target_col]
+    categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
+    numerical_cols   = X.select_dtypes(include=['float64', 'int64']).columns.tolist()
+    print(f"           Categorical columns : {categorical_cols}")
+    print(f"           Numerical columns   : {numerical_cols}")
+    return X, y, categorical_cols, numerical_cols
 
-# STEP 1: Train-Test-Val Split FIRST (before ANY preprocessing)
-X_temp, X_test_orig, y_temp, y_test = train_test_split(
-    X, y, test_size=0.1, random_state=42, stratify=y
-)
-X_train_orig, X_val_orig, y_train, y_val = train_test_split(
-    X_temp, y_temp, test_size=0.111, random_state=42, stratify=y_temp
-)
 
-print(f"\nTrain set size: {X_train_orig.shape[0]}")
-print(f"Val set size: {X_val_orig.shape[0]}")
-print(f"Test set size: {X_test_orig.shape[0]}")
+# ===========================================================
+# FILTER 5 — Stratified train / validation / test split
+# PIPE IN  : (X, y)
+# PIPE OUT : (X_train_orig, X_val_orig, X_test_orig,
+#             y_train, y_val, y_test)
+# ===========================================================
+def split_datasets(X: pd.DataFrame, y: pd.Series):
+    print("\n[FILTER 5] Splitting into train / val / test sets ...")
+    X_temp, X_test_orig, y_temp, y_test = train_test_split(
+        X, y, test_size=0.1, random_state=42, stratify=y
+    )
+    X_train_orig, X_val_orig, y_train, y_val = train_test_split(
+        X_temp, y_temp, test_size=0.111, random_state=42, stratify=y_temp
+    )
+    print(f"           Train : {X_train_orig.shape[0]} rows")
+    print(f"           Val   : {X_val_orig.shape[0]} rows")
+    print(f"           Test  : {X_test_orig.shape[0]} rows")
+    return X_train_orig, X_val_orig, X_test_orig, y_train, y_val, y_test
 
-# STEP 2: Fit encoders on TRAINING data ONLY
-print("\nFitting LabelEncoders on TRAINING data only...")
-label_encoders = {}
-X_train_encoded = X_train_orig.copy()
-for col in categorical_cols:
-    le = LabelEncoder()
-    X_train_encoded[col] = le.fit_transform(X_train_orig[col].astype(str))
-    label_encoders[col] = le
-    print(f"Encoded {col}: {dict(zip(le.classes_, le.transform(le.classes_)))}")
 
-# STEP 3: Apply encoders to validation and test
-X_val_encoded = X_val_orig.copy()
-X_test_encoded = X_test_orig.copy()
-for col in categorical_cols:
-    X_val_encoded[col] = label_encoders[col].transform(X_val_orig[col].astype(str))
-    X_test_encoded[col] = label_encoders[col].transform(X_test_orig[col].astype(str))
+# ===========================================================
+# FILTER 6 — Fit LabelEncoders on TRAINING data only
+# PIPE IN  : (X_train_orig, categorical_cols)
+# PIPE OUT : (X_train_encoded DataFrame, label_encoders dict)
+# ===========================================================
+def fit_label_encoders(X_train_orig: pd.DataFrame, categorical_cols: list):
+    print("\n[FILTER 6] Fitting LabelEncoders on training data only ...")
+    label_encoders = {}
+    X_train_encoded = X_train_orig.copy()
+    for col in categorical_cols:
+        le = LabelEncoder()
+        X_train_encoded[col] = le.fit_transform(X_train_orig[col].astype(str))
+        label_encoders[col] = le
+        print(f"           Encoded '{col}': {dict(zip(le.classes_, le.transform(le.classes_)))}")
+    return X_train_encoded, label_encoders
 
-# STEP 4: Fit scaler on TRAINING data ONLY
-print("\nFitting StandardScaler on TRAINING data only...")
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train_encoded)
-X_val_scaled = scaler.transform(X_val_encoded)
-X_test_scaled = scaler.transform(X_test_encoded)
 
-# Convert to DataFrames
-X_train = pd.DataFrame(X_train_scaled, columns=X.columns)
-X_val = pd.DataFrame(X_val_scaled, columns=X.columns)
-X_test = pd.DataFrame(X_test_scaled, columns=X.columns)
+# ===========================================================
+# FILTER 7 — Apply fitted encoders to validation and test sets
+# PIPE IN  : (X_val_orig, X_test_orig, label_encoders, categorical_cols)
+# PIPE OUT : (X_val_encoded, X_test_encoded)
+# ===========================================================
+def apply_label_encoders(X_val_orig: pd.DataFrame, X_test_orig: pd.DataFrame,
+                         label_encoders: dict, categorical_cols: list):
+    print("\n[FILTER 7] Applying LabelEncoders to val and test sets ...")
+    X_val_encoded  = X_val_orig.copy()
+    X_test_encoded = X_test_orig.copy()
+    for col in categorical_cols:
+        X_val_encoded[col]  = label_encoders[col].transform(X_val_orig[col].astype(str))
+        X_test_encoded[col] = label_encoders[col].transform(X_test_orig[col].astype(str))
+    print("           Encoding applied.")
+    return X_val_encoded, X_test_encoded
 
-# STEP 5: Save test_data.csv with ORIGINAL categorical values
-print("\nSaving test_data.csv with ORIGINAL categorical values...")
-test_data = X_test_orig.copy()
-test_data['loan_status'] = y_test.values
-test_data.to_csv('test_data.csv', index=False)
-print("✓ Test data saved with original categorical values for re-upload")
 
-# ============================================================
-# MODEL TRAINING AND EVALUATION
-# ============================================================
+# ===========================================================
+# FILTER 8 — Fit StandardScaler on TRAINING data only
+# PIPE IN  : X_train_encoded DataFrame
+# PIPE OUT : (X_train_scaled DataFrame, fitted scaler)
+# ===========================================================
+def fit_scaler(X_train_encoded: pd.DataFrame):
+    print("\n[FILTER 8] Fitting StandardScaler on training data only ...")
+    feature_names = list(X_train_encoded.columns)
+    scaler = StandardScaler()
+    X_train_scaled = pd.DataFrame(
+        scaler.fit_transform(X_train_encoded),
+        columns=feature_names
+    )
+    print("           Scaler fitted.")
+    return X_train_scaled, scaler
 
-results = []
 
-# 1. Logistic Regression
-print("\n" + "="*60)
-print("1. LOGISTIC REGRESSION")
-print("="*60)
-lr = LogisticRegression(max_iter=1000, random_state=42, solver='lbfgs')
-lr.fit(X_train, y_train)
-y_pred_lr = lr.predict(X_test)
-acc_lr = accuracy_score(y_test, y_pred_lr)
-auc_lr = roc_auc_score(y_test, lr.predict_proba(X_test)[:, 1])
-prec_lr = precision_score(y_test, y_pred_lr)
-rec_lr = recall_score(y_test, y_pred_lr)
-f1_lr = f1_score(y_test, y_pred_lr)
-mcc_lr = matthews_corrcoef(y_test, y_pred_lr)
+# ===========================================================
+# FILTER 9 — Apply fitted scaler to validation and test sets
+# PIPE IN  : (X_val_encoded, X_test_encoded, scaler, feature_names)
+# PIPE OUT : (X_val_scaled, X_test_scaled)  — both DataFrames
+# ===========================================================
+def apply_scaler(X_val_encoded: pd.DataFrame, X_test_encoded: pd.DataFrame,
+                 scaler: StandardScaler, feature_names: list):
+    print("\n[FILTER 9] Applying StandardScaler to val and test sets ...")
+    X_val_scaled  = pd.DataFrame(scaler.transform(X_val_encoded),  columns=feature_names)
+    X_test_scaled = pd.DataFrame(scaler.transform(X_test_encoded), columns=feature_names)
+    print("           Scaling applied.")
+    return X_val_scaled, X_test_scaled
 
-print(f"Accuracy:  {acc_lr:.4f}")
-print(f"AUC:       {auc_lr:.4f}")
-print(f"Precision: {prec_lr:.4f}")
-print(f"Recall:    {rec_lr:.4f}")
-print(f"F1 Score:  {f1_lr:.4f}")
-print(f"MCC:       {mcc_lr:.4f}")
-results.append({'Model': 'Logistic Regression', 'Accuracy': acc_lr, 'AUC': auc_lr, 'Precision': prec_lr, 'Recall': rec_lr, 'F1': f1_lr, 'MCC': mcc_lr})
-joblib.dump(lr, 'logistic_regression.joblib')
-print("✓ Model saved")
 
-# Save results
-results_df = pd.DataFrame(results)
-results_df.to_csv('model_results.csv', index=False)
-print("\n✓ Results saved to model_results.csv")
+# ===========================================================
+# FILTER 10 — Persist test set with original categorical values
+# PIPE IN  : (X_test_orig, y_test)
+# PIPE OUT : path to saved CSV (side-effect: writes file)
+# ===========================================================
+def save_test_data(X_test_orig: pd.DataFrame, y_test: pd.Series,
+                   output_path: str = 'test_data.csv') -> str:
+    print(f"\n[FILTER 10] Saving original test data to '{output_path}' ...")
+    test_data = X_test_orig.copy()
+    test_data['loan_status'] = y_test.values
+    test_data.to_csv(output_path, index=False)
+    print(f"            Saved {len(test_data)} rows.")
+    return output_path
 
-# Save preprocessors
-feature_names = list(X.columns)
-joblib.dump(scaler, 'scaler.joblib')
-joblib.dump(label_encoders, 'label_encoders.joblib')
-joblib.dump(feature_names, 'feature_names.joblib')
-print("✓ Scaler, label encoders, and feature names saved")
 
-# Summary
-print("\n" + "="*60)
-print("SUMMARY RESULTS")
-print("="*60)
-print(results_df.to_string(index=False))
+# ===========================================================
+# FILTER 11 — Train Logistic Regression model
+# PIPE IN  : (X_train_scaled, y_train)
+# PIPE OUT : fitted LogisticRegression model
+# ===========================================================
+def train_model(X_train: pd.DataFrame, y_train: pd.Series) -> LogisticRegression:
+    print("\n[FILTER 11] Training Logistic Regression model ...")
+    model = LogisticRegression(max_iter=1000, random_state=42, solver='lbfgs')
+    model.fit(X_train, y_train)
+    print("            Model training complete.")
+    return model
 
-print("\n" + "="*60)
-print("✓ TRAINING COMPLETED SUCCESSFULLY")
-print("="*60)
-print("Model is ready for deployment!")
+
+# ===========================================================
+# FILTER 12 — Evaluate model on test set
+# PIPE IN  : (model, X_test_scaled, y_test)
+# PIPE OUT : metrics dict
+# ===========================================================
+def evaluate_model(model: LogisticRegression,
+                   X_test: pd.DataFrame, y_test: pd.Series) -> dict:
+    print("\n[FILTER 12] Evaluating model on test set ...")
+    y_pred = model.predict(X_test)
+    metrics = {
+        'Model'    : 'Logistic Regression',
+        'Accuracy' : accuracy_score(y_test, y_pred),
+        'AUC'      : roc_auc_score(y_test, model.predict_proba(X_test)[:, 1]),
+        'Precision': precision_score(y_test, y_pred),
+        'Recall'   : recall_score(y_test, y_pred),
+        'F1'       : f1_score(y_test, y_pred),
+        'MCC'      : matthews_corrcoef(y_test, y_pred),
+    }
+    print(f"            Accuracy  : {metrics['Accuracy']:.4f}")
+    print(f"            AUC       : {metrics['AUC']:.4f}")
+    print(f"            Precision : {metrics['Precision']:.4f}")
+    print(f"            Recall    : {metrics['Recall']:.4f}")
+    print(f"            F1 Score  : {metrics['F1']:.4f}")
+    print(f"            MCC       : {metrics['MCC']:.4f}")
+    return metrics
+
+
+# ===========================================================
+# FILTER 13 — Persist model + preprocessor artifacts to disk
+# PIPE IN  : (model, scaler, label_encoders, feature_names)
+# PIPE OUT : list of saved file paths (side-effect: writes files)
+# ===========================================================
+def save_artifacts(model: LogisticRegression, scaler: StandardScaler,
+                   label_encoders: dict, feature_names: list) -> list:
+    print("\n[FILTER 13] Saving model and preprocessor artifacts ...")
+    paths = {
+        'logistic_regression.joblib': model,
+        'scaler.joblib'             : scaler,
+        'label_encoders.joblib'     : label_encoders,
+        'feature_names.joblib'      : feature_names,
+    }
+    for filename, obj in paths.items():
+        joblib.dump(obj, filename)
+        print(f"            Saved: {filename}")
+    return list(paths.keys())
+
+
+# ===========================================================
+# FILTER 14 — Save evaluation results to CSV
+# PIPE IN  : list of metrics dicts
+# PIPE OUT : path to saved results CSV (side-effect: writes file)
+# ===========================================================
+def save_results(results: list, output_path: str = 'model_results.csv') -> str:
+    print(f"\n[FILTER 14] Saving evaluation results to '{output_path}' ...")
+    results_df = pd.DataFrame(results)
+    results_df.to_csv(output_path, index=False)
+    print("\n" + "="*60)
+    print("SUMMARY RESULTS")
+    print("="*60)
+    print(results_df.to_string(index=False))
+    return output_path
+
+
+# ===========================================================
+# PIPELINE ORCHESTRATOR
+# Connects every filter with explicit pipes between them.
+# ===========================================================
+def run_pipeline(data_path: str = 'loan_data.csv'):
+    print("="*60)
+    print("LOAN APPROVAL — PIPE AND FILTER PIPELINE")
+    print("="*60)
+
+    # --- PIPE: file path -----------------------------------
+    raw_df = load_data(data_path)                             # FILTER 1
+
+    # --- PIPE: raw DataFrame -------------------------------
+    clean_df = drop_missing(raw_df)                           # FILTER 2
+
+    # --- PIPE: NaN-free DataFrame --------------------------
+    filtered_df = remove_outliers(clean_df)                   # FILTER 3
+
+    # --- PIPE: outlier-free DataFrame ----------------------
+    X, y, cat_cols, num_cols = split_features_target(         # FILTER 4
+        filtered_df, target_col='loan_status'
+    )
+
+    # --- PIPE: (X, y, col lists) ---------------------------
+    X_train_orig, X_val_orig, X_test_orig, \
+    y_train, y_val, y_test = split_datasets(X, y)             # FILTER 5
+
+    # --- PIPE: original split DataFrames + Series ----------
+    X_train_encoded, label_encoders = fit_label_encoders(     # FILTER 6
+        X_train_orig, cat_cols
+    )
+
+    # --- PIPE: encoded train + fitted encoders -------------
+    X_val_encoded, X_test_encoded = apply_label_encoders(     # FILTER 7
+        X_val_orig, X_test_orig, label_encoders, cat_cols
+    )
+
+    # --- PIPE: encoded val & test DataFrames ---------------
+    X_train_scaled, scaler = fit_scaler(X_train_encoded)      # FILTER 8
+
+    # --- PIPE: scaled train DataFrame + fitted scaler ------
+    feature_names = list(X.columns)
+    X_val_scaled, X_test_scaled = apply_scaler(               # FILTER 9
+        X_val_encoded, X_test_encoded, scaler, feature_names
+    )
+
+    # --- PIPE: scaled val & test DataFrames ----------------
+    save_test_data(X_test_orig, y_test)                       # FILTER 10
+
+    # --- PIPE: (X_train_scaled, y_train) -------------------
+    model = train_model(X_train_scaled, y_train)              # FILTER 11
+
+    # --- PIPE: trained model + (X_test_scaled, y_test) -----
+    metrics = evaluate_model(model, X_test_scaled, y_test)    # FILTER 12
+
+    # --- PIPE: metrics dict --------------------------------
+    save_artifacts(model, scaler, label_encoders,             # FILTER 13
+                   feature_names)
+
+    # --- PIPE: list of metrics dicts -----------------------
+    save_results([metrics])                                    # FILTER 14
+
+    print("\n" + "="*60)
+    print("TRAINING COMPLETED SUCCESSFULLY")
+    print("="*60)
+    print("Model is ready for deployment!")
+
+
+# ===========================================================
+# Entry point
+# ===========================================================
+if __name__ == '__main__':
+    run_pipeline(data_path='loan_data.csv')
