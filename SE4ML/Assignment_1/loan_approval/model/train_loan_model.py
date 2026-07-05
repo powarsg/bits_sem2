@@ -72,7 +72,7 @@ def load_data(filepath: str) -> pd.DataFrame:
 # ===========================================================
 def drop_missing(df: pd.DataFrame) -> pd.DataFrame:
     print("\n[FILTER 2] Dropping missing values ...")
-    print(f"           Missing counts before:\n{df.isnull().sum()}")
+   #print(f"           Missing counts before:\n{df.isnull().sum()}")
     df_clean = df.dropna()
     print(f"           Shape after drop: {df_clean.shape}")
     return df_clean
@@ -290,9 +290,16 @@ def save_results(results: list, output_path: str = 'model_results.csv') -> str:
 # later READ from that store — the two sides never share memory.
 # ===========================================================
 def run_pipeline(data_path: str = 'loan_data.csv'):
-    print("="*60)
-    print("LOAN APPROVAL — PIPE AND FILTER PIPELINE")
-    print("="*60)
+    print("=" * 60)
+    print("LOAN APPROVAL : CQRS ARCHITECTURE - COMMAND SIDE")
+    print("=" * 60)
+    print("Command Handler : run_pipeline()")
+    print("Responsibility  : Train model and persist artifacts")
+    print("Pattern         : Pipe-and-Filter")
+    print("Pipeline        : Each filter processes data and passes")
+    print("                  the output to the next filter.")
+    print("=" * 60)
+    print("\nStarting Loan Approval Training Pipeline...\n")
 
     # --- PIPE: file path -----------------------------------
     raw_df = load_data(data_path)                             # FILTER 1

@@ -1,0 +1,83 @@
+============================================================
+LOAN APPROVAL : CQRS ARCHITECTURE - COMMAND SIDE
+============================================================
+Command Handler : run_pipeline()
+Responsibility  : Train model and persist artifacts
+Pattern         : Pipe-and-Filter
+Pipeline        : Each filter processes data and passes
+                  the output to the next filter.
+============================================================
+
+Starting Loan Approval Training Pipeline...
+
+[FILTER 1] Loading dataset from 'loan_data.csv' ...
+           Shape: (45000, 14)
+           Target distribution:
+loan_status
+0    35000
+1    10000
+Name: count, dtype: int64
+
+[FILTER 2] Dropping missing values ...
+           Shape after drop: (45000, 14)
+
+[FILTER 3] Removing age outliers (person_age > 120) ...
+           Shape after outlier removal: (44995, 14)
+
+[FILTER 4] Splitting features and target ('loan_status') ...
+           Categorical columns : ['person_gender', 'person_education', 'person_home_ownership', 'loan_intent', 'previous_loan_defaults_on_file']
+           Numerical columns   : ['person_age', 'person_income', 'person_emp_exp', 'loan_amnt', 'loan_int_rate', 'loan_percent_income', 'cb_person_cred_hist_length', 'credit_score']
+
+[FILTER 5] Splitting into train / val / test sets ...
+           Train : 36000 rows
+           Val   : 4495 rows
+           Test  : 4500 rows
+
+[FILTER 6] Fitting LabelEncoders on training data only ...
+           Encoded 'person_gender': {'female': 0, 'male': 1}
+           Encoded 'person_education': {'Associate': 0, 'Bachelor': 1, 'Doctorate': 2, 'High School': 3, 'Master': 4}
+           Encoded 'person_home_ownership': {'MORTGAGE': 0, 'OTHER': 1, 'OWN': 2, 'RENT': 3}
+           Encoded 'loan_intent': {'DEBTCONSOLIDATION': 0, 'EDUCATION': 1, 'HOMEIMPROVEMENT': 2, 'MEDICAL': 3, 'PERSONAL': 4, 'VENTURE': 5}
+           Encoded 'previous_loan_defaults_on_file': {'No': 0, 'Yes': 1}
+
+[FILTER 7] Applying LabelEncoders to val and test sets ...
+           Encoding applied.
+
+[FILTER 8] Fitting StandardScaler on training data only ...
+           Scaler fitted.
+
+[FILTER 9] Applying StandardScaler to val and test sets ...
+           Scaling applied.
+
+[FILTER 10] Saving original test data to 'test_data.csv' ...
+            Saved 4500 rows.
+
+[FILTER 11] Training Logistic Regression model ...
+            Model training complete.
+
+[FILTER 12] Evaluating model on test set ...
+            Accuracy  : 0.8927
+            AUC       : 0.9507
+            Precision : 0.7630
+            Recall    : 0.7500
+            F1 Score  : 0.7564
+            MCC       : 0.6876
+
+[FILTER 13] Saving model and preprocessor artifacts ...
+            Saved: logistic_regression.joblib
+            Saved: scaler.joblib
+            Saved: label_encoders.joblib
+            Saved: feature_names.joblib
+
+[FILTER 14] Saving evaluation results to 'model_results.csv' ...
+
+============================================================
+SUMMARY RESULTS
+============================================================
+              Model  Accuracy      AUC  Precision  Recall      F1      MCC
+Logistic Regression  0.892667 0.950729    0.76297    0.75 0.75643 0.687645
+
+============================================================
+TRAINING COMPLETED SUCCESSFULLY
+============================================================
+Model is ready for deployment!

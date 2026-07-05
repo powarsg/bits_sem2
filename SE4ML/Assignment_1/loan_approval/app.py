@@ -1,8 +1,8 @@
 """
 ╔══════════════════════════════════════════════════════════════╗
-║          CQRS PATTERN — QUERY SIDE                          ║
-║  Responsibility : READ from the model store + predict       ║
-║  Triggers       : Every user interaction in the browser     ║
+║          CQRS PATTERN — QUERY SIDE                           ║
+║  Responsibility : READ from the model store + predict        ║
+║  Triggers       : Every user interaction in the browser      ║
 ║  Input          : *.joblib artifacts written by Command side ║
 ╚══════════════════════════════════════════════════════════════╝
 
