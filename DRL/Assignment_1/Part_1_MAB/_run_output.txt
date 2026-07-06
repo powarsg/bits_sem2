@@ -1,0 +1,121 @@
+﻿======================================================================
+VIRTUAL LAB EXECUTION METADATA
+======================================================================
+Execution Timestamp : 2026-06-03 22:33:02
+Virtual Machine ID  : DESKTOP-HM3GEV0
+Hostname            : DESKTOP-HM3GEV0
+Platform            : Windows-11-10.0.22631-SP0
+======================================================================
+
+======================================================================
+TASK 1: DATASET DESIGN
+======================================================================
+Group Number (G)              : 116
+Total Medicines (K)           : 7
+True Best Medicine (hidden)   : 3
+
+Hidden Success Probabilities:
+  Medicine 0: P = 0.54
+  Medicine 1: P = 0.61
+  Medicine 2: P = 0.68
+  Medicine 3: P = 0.75  <-- highest
+  Medicine 4: P = 0.40
+  Medicine 5: P = 0.47
+  Medicine 6: P = 0.54
+
+First 10 rows of base dataset (patient_id, severity_score):
+ patient_id  severity_score
+          0               1
+          1               2
+          2               3
+          3               4
+          4               5
+          5               1
+          6               2
+          7               3
+          8               4
+          9               5
+
+======================================================================
+RUNNING BANDIT STRATEGIES (1000 patients each)
+======================================================================
+
+>>> Immediate Exploitation ...
+    Final cumulative utility_score : 522.3000
+    Convergence step (est. best)   : 61
+    Reward increment variance      : 0.109273
+    Empirical success rates after 10 trials/arm:
+      Medicine 0: 0.7000
+      Medicine 1: 0.6000
+      Medicine 2: 0.6000
+      Medicine 3: 0.8000
+      Medicine 4: 0.2000
+      Medicine 5: 0.6000
+      Medicine 6: 0.6000
+    Locked medicine for remaining patients: 3
+
+>>> Epsilon-Greedy 10% ...
+    Final cumulative utility_score : 509.0000
+    Convergence step (est. best)   : 12
+    Reward increment variance      : 0.113599
+
+>>> Epsilon-Greedy 1% ...
+    Final cumulative utility_score : 508.6000
+    Convergence step (est. best)   : 12
+    Reward increment variance      : 0.113166
+
+>>> Epsilon-Greedy 50% ...
+    Final cumulative utility_score : 456.0000
+    Convergence step (est. best)   : 12
+    Reward increment variance      : 0.125164
+
+>>> UCB1 ...
+    Final cumulative utility_score : 461.3000
+    Convergence step (est. best)   : 64
+    Reward increment variance      : 0.124912
+
+Sample rows after Epsilon-Greedy 10% (first 10 with all columns):
+ patient_id  severity_score  assigned_medicine  clinical_outcome  utility_score
+          0               1                  0                 1            0.9
+          1               2                  1                 1            0.8
+          2               3                  2                 0            0.0
+          3               4                  3                 1            0.6
+          4               5                  4                 0            0.0
+          5               1                  5                 1            0.9
+          6               2                  6                 1            0.8
+          7               3                  0                 1            0.7
+          8               4                  0                 1            0.6
+          9               5                  0                 0            0.0
+
+======================================================================
+TASK 3: EXPLORATION RATE ANALYSIS
+======================================================================
+Epsilon-Greedy 10%     | Final reward: 509.0000 | Convergence: 12 | Stability var: 0.113599
+Epsilon-Greedy 1%      | Final reward: 508.6000 | Convergence: 12 | Stability var: 0.113166
+Epsilon-Greedy 50%     | Final reward: 456.0000 | Convergence: 12 | Stability var: 0.125164
+
+Observation: 1% exploration exploits aggressively (less discovery of better arms); 50% exploration wastes many pulls on suboptimal medicines; 10% balances discovery and exploitation for this clinical trial setting.
+
+======================================================================
+FINAL CUMULATIVE REWARDS (utility_score)
+======================================================================
+  Immediate Exploitation      : 522.3000
+  Epsilon-Greedy 10%          : 509.0000
+  Epsilon-Greedy 1%           : 508.6000
+  Epsilon-Greedy 50%          : 456.0000
+  UCB1                        : 461.3000
+
+Plot saved to: D:\workspace\bits-mtech-work\bits_sem2\DRL\Assignment_1\Part_1_MAB\group_116_cumulative_reward.png
+
+======================================================================
+TASK 5: COMPARATIVE ANALYSIS ù ANSWERS
+======================================================================
+1. Highest cumulative reward after 1000 patients: Immediate Exploitation (522.3000)
+2. Fastest identification of best medicine: Epsilon-Greedy 10% (step 12)
+3. Most stable performance (lowest reward-increment variance): Immediate Exploitation (variance = 0.109273)
+4. Safest real-world recommendation: UCB1 or Epsilon-Greedy 10%. UCB1 automatically favors under-sampled medicines then shifts toward evidence; 10% epsilon-greedy retains controlled exploration without the heavy waste of 50% exploration. Immediate exploitation risks locking onto a suboptimal medicine after only 10 trials per arm.
+
+----------------------------------------------------------------------
+COMPARATIVE SUMMARY (3û5 sentences)
+----------------------------------------------------------------------
+For group 116, medicine 3 has the highest hidden recovery probability (0.75). Immediate Exploitation achieved the largest total utility_score, while Epsilon-Greedy 10% identified the best arm earliest. Immediate Exploitation showed the smoothest cumulative reward curve. Epsilon-greedy at 1% behaves nearly as a pure exploit strategy and may miss better treatments; at 50% it over-explores and sacrifices patient utility. For hospital deployment, UCB1 or moderate epsilon-greedy (10%) is preferable because they limit persistent suboptimal prescribing while still gathering evidence.
