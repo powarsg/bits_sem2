@@ -1,0 +1,94 @@
+[
+  {
+    "name": "DQN_original",
+    "algo": "dqn",
+    "env_kind": "original",
+    "n_episodes": 100,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "mean_reward": 209.2833424557554,
+    "std_reward": 56.23425476627781,
+    "mean_base_reward": 209.2833424557554,
+    "landing_rate": 0.5466666666666667,
+    "mean_thrusters": 408.25666666666666,
+    "mean_episode_len": 566.8866666666667,
+    "thruster_rate": 0.7139168626336353,
+    "mean_V_pred_s0": 52.43983847935994,
+    "mean_actual_G0": 63.44290266244115,
+    "value_bias": -11.0030641830812,
+    "observed_misfire_rate": 0.0,
+    "reward_across_seeds_std": 17.172115549832903
+  },
+  {
+    "name": "DDQN_original",
+    "algo": "ddqn",
+    "env_kind": "original",
+    "n_episodes": 100,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "mean_reward": 208.30425511002895,
+    "std_reward": 62.19449207986734,
+    "mean_base_reward": 208.30425511002895,
+    "landing_rate": 0.6266666666666666,
+    "mean_thrusters": 374.10999999999996,
+    "mean_episode_len": 542.85,
+    "thruster_rate": 0.6890153540477266,
+    "mean_V_pred_s0": 52.76753145853678,
+    "mean_actual_G0": 62.90973710371917,
+    "value_bias": -10.142205645182385,
+    "observed_misfire_rate": 0.0,
+    "reward_across_seeds_std": 8.68133814775187
+  },
+  {
+    "name": "DQN_modified",
+    "algo": "dqn",
+    "env_kind": "modified",
+    "n_episodes": 100,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "mean_reward": 117.77323425897164,
+    "std_reward": 134.24698414274746,
+    "mean_base_reward": 191.31790092563836,
+    "landing_rate": 0.5966666666666667,
+    "mean_thrusters": 344.5933333333333,
+    "mean_episode_len": 532.5066666666667,
+    "thruster_rate": 0.6459639309104253,
+    "mean_V_pred_s0": 31.17952300230662,
+    "mean_actual_G0": 37.66311382657346,
+    "value_bias": -6.483590824266841,
+    "observed_misfire_rate": 0.15001782028035862,
+    "reward_across_seeds_std": 39.981941720112516
+  },
+  {
+    "name": "DDQN_modified",
+    "algo": "ddqn",
+    "env_kind": "modified",
+    "n_episodes": 100,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "mean_reward": 132.60912241243173,
+    "std_reward": 141.00660146386008,
+    "mean_base_reward": 193.95612241243182,
+    "landing_rate": 0.66,
+    "mean_thrusters": 314.49,
+    "mean_episode_len": 473.2933333333333,
+    "thruster_rate": 0.6627180006452841,
+    "mean_V_pred_s0": 28.960555761655172,
+    "mean_actual_G0": 39.708851053696556,
+    "value_bias": -10.748295292041385,
+    "observed_misfire_rate": 0.14839290002657055,
+    "reward_across_seeds_std": 22.338535000709722
+  }
+]
