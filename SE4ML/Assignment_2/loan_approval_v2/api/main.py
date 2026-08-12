@@ -15,12 +15,10 @@ from contextlib import asynccontextmanager
 import pandas as pd
 from fastapi import FastAPI, HTTPException, status
 
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))  # noqa: E402
-
-from src.inference import InferenceEngine  # noqa: E402
-from src.logger import get_logger  # noqa: E402
-from api.schemas import (  # noqa: E402
+from src.config import settings
+from src.inference import InferenceEngine
+from src.logger import get_logger
+from .schemas import (
     LoanApplicationRequest,
     PredictionResponse,
     HealthResponse,
@@ -29,10 +27,7 @@ from api.schemas import (  # noqa: E402
 
 logger = get_logger("api")
 
-MODEL_DIR = os.environ.get(
-    "MODEL_DIR",
-    os.path.join(os.path.dirname(__file__), "..", "model_artifacts"),
-)
+MODEL_DIR = os.environ.get("MODEL_DIR", settings.model_dir)
 TEST_DATA_PATH = os.path.join(MODEL_DIR, "test_data.csv")
 METRICS_PATH = os.path.join(MODEL_DIR, "model_metrics.json")
 

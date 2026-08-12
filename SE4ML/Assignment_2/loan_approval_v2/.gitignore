@@ -1,0 +1,9 @@
+# Runtime-generated directories — never commit these
+model_artifacts/
+logs/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+dist/
+.env

@@ -4,25 +4,20 @@ import json
 import os
 import sys
 
-# Allow running from repo root
-sys.path.insert(0, os.path.dirname(__file__))  # noqa: E402
+import joblib
+from sklearn.model_selection import train_test_split
 
-import joblib  # noqa: E402
-from sklearn.model_selection import train_test_split  # noqa: E402
-
-from src.data_ingestion import DataIngestion  # noqa: E402
-from src.data_quality import DataQualityChecker  # noqa: E402
-from src.feature_engineering import FeatureEngineering  # noqa: E402
-from src.logger import get_logger  # noqa: E402
-from src.model_trainer import ModelTrainer  # noqa: E402
+from src.config import settings
+from src.data_ingestion import DataIngestion
+from src.data_quality import DataQualityChecker
+from src.feature_engineering import FeatureEngineering
+from src.logger import get_logger
+from src.model_trainer import ModelTrainer
 
 logger = get_logger("train")
 
-DATA_PATH = os.environ.get(
-    "DATA_PATH",
-    os.path.join(os.path.dirname(__file__), "..", "..", "Assignment_1", "loan_approval", "model", "loan_data.csv"),
-)
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "model_artifacts")
+DATA_PATH = settings.data_path
+MODEL_DIR = settings.model_dir
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 
