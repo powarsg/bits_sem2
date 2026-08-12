@@ -11,9 +11,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent  # loan_approval_v2/
 
 class Settings(BaseSettings):
     # Data
-    data_path: str = str(
-        _REPO_ROOT.parent.parent / "Assignment_1" / "loan_approval" / "model" / "loan_data.csv"
-    )
+    data_path: str = str(_REPO_ROOT / "data" / "loan_data.csv")
 
     # Artifacts
     model_dir: str = str(_REPO_ROOT / "model_artifacts")

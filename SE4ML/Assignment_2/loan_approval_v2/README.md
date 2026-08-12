@@ -27,7 +27,7 @@ cp .env.example .env             # edit paths if needed
 python3 scripts/train.py
 ```
 
-Reads `data_path` from `.env` (default: `../Assignment_1/loan_approval/model/loan_data.csv`).  
+Reads `data_path` from `.env` (default: `data/loan_data.csv` — bundled in the repo).  
 Saves artifacts to `model_artifacts/` and metrics to `model_artifacts/model_metrics.json`.
 
 ### Docker
@@ -107,6 +107,8 @@ loan_approval_v2/
   Dockerfile                  # containerised deployment
   .env.example                # environment variable template
   .gitignore
+  data/
+    loan_data.csv             # 45K-row dataset 
   scripts/
     train.py                  # training entry point (separate from serving)
   src/
