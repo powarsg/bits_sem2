@@ -1,0 +1,62 @@
+Input file read successfully : inputPS04_9x9.txt
+==============================================================================
+           HEX GAME AI - MONTE CARLO TREE SEARCH (UCT) - GROUP G116
+==============================================================================
+Board Size                : 9 x 9
+Time Limit per AI Move    : 100 ms
+Player A (1)              : AI Agent - connects TOP row to BOTTOM row
+Player B (2)              : Human    - connects LEFT col to RIGHT col
+Adjacency                 : (r-1,c) (r+1,c) (r,c-1) (r,c+1) (r-1,c+1) (r+1,c-1)
+Initial Board :
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+2 2 2 2 1 2 2 2 2
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 0 0 0 0 0
+
+====================Turn 1===============================
+Player                    : A (AI)
+Move Selected             : (8,3)
+Search Algorithm          : MCTS(UCT) + immediate-win detection
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 0
+Nodes Expanded            : 60
+Search Depth (tree)       : 1
+Heuristic Score (Win Prob): +INF
+Execution Time            : 0 ms
+Game Status               : TERMINAL
+Terminal State            : YES
+Winner                    : Player A
+Winning Path              : (0,4) -> (1,4) -> (2,4) -> (3,4) -> (4,4) -> (5,4) -> (6,4) -> (7,4) -> (8,3)
+Current Board :
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+2 2 2 2 1 2 2 2 2
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0
+0 0 0 1 0 0 0 0 0
+
+==============================================================================
+                              GAME OVER
+==============================================================================
+Winner                    : Player A
+Total Turns               : 1
+Total AI Moves            : 1
+Total Human Moves         : 0
+Average Simulations       : 0
+Average Nodes Expanded    : 60
+Average Search Depth      : 1.0
+Average AI Move Time      : 0 ms
+Maximum Search Depth      : 1
+Maximum Nodes Expanded    : 60
+Game Result               : PLAYER_A_WINS
+==============================================================================
+
+Complete transcript written to 'outputPS04_9x9.txt'.
