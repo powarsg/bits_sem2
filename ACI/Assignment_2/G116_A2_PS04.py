@@ -655,7 +655,7 @@ def load_game_input(path):
 
     try:
         time_limit = int(float(header[1]))
-    except ValueError:
+    except (ValueError, OverflowError):
         raise InvalidBoardError("Time limit '%s' is not a number." % header[1])
     if time_limit <= 0:
         raise InvalidBoardError(
@@ -732,7 +732,7 @@ def prompt_for_setup():
             continue
         try:
             value = int(float(raw))
-        except ValueError:
+        except (ValueError, OverflowError):
             print("  ERROR : the time limit must be a number.")
             continue
         if value <= 0:
@@ -1090,6 +1090,17 @@ def _tc_board_edge_cases(log):
         load_game_input("no_such_file_G116.txt")
     except InvalidBoardError as exc:
         log.write("  missing input file rejected : %s" % exc)
+    non_finite = "_tmp_non_finite_time_G116.txt"
+    with open(non_finite, "w", encoding="utf-8") as fh:
+        fh.write("7\ninf\n")
+    try:
+        load_game_input(non_finite)
+    except InvalidBoardError as exc:
+        log.write("  non-finite time rejected : %s" % exc)
+    else:
+        raise AssertionError("A non-finite time limit must be rejected.")
+    finally:
+        os.remove(non_finite)
     compact = "_tmp_compact_input_G116.txt"
     with open(compact, "w", encoding="utf-8") as fh:
         fh.write("7\n2000\n" + "0000000\n" * 7)
