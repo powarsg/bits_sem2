@@ -433,25 +433,22 @@ class MCTSAgent:
                 "MCTS cannot search: the board is full and holds no legal move.")
 
         opponent = 3 - player
-        nodes_scanned = 0
 
         # -- Tactical pre-filter (domain knowledge injected at the root) -------
         # (a) an immediate winning move is played at once - no search needed.
         for mv in legal:
-            nodes_scanned += 1
             board.place(mv, player)
             won = board.is_connected(player)
             board.remove(mv)
             if won:
                 r, c = board.coords(mv)
-                return SearchResult(mv, r, c, 1.0, 0, nodes_scanned, 1,
+                return SearchResult(mv, r, c, 1.0, 0, 0, 0,
                                     (time.perf_counter() - start) * 1000.0,
                                     "MCTS(UCT) + immediate-win detection", 0)
 
         # (b) if the opponent can win next ply, only blocking moves are kept.
         blocking = []
         for mv in legal:
-            nodes_scanned += 1
             board.place(mv, opponent)
             threat = board.is_connected(opponent)
             board.remove(mv)
@@ -465,7 +462,7 @@ class MCTSAgent:
         self.rng.shuffle(root_moves)
         root = MCTSNode(None, None, opponent, list(root_moves))
         simulations = 0
-        nodes_expanded = nodes_scanned
+        nodes_expanded = 0
         max_depth = 0
         deadline = start + self.time_limit
 
@@ -634,33 +631,43 @@ def load_game_input(path):
 
     lines = [ln.strip() for ln in raw.splitlines()]
     lines = [ln for ln in lines if ln and not ln.startswith("#")]
-    tokens = []
-    for ln in lines:
-        tokens.extend(t for t in re.split(r"[\s,]+", ln) if t)
-    if len(tokens) < 2:
+    if len(lines) < 2:
         raise InvalidBoardError(
             "Input file '%s' must contain at least the board size and the "
             "time limit." % path)
 
+    header = []
+    for ln in lines[:2]:
+        header.extend(t for t in re.split(r"[\s,]+", ln) if t)
+    if len(header) != 2:
+        raise InvalidBoardError(
+            "The first two input lines must contain only the board size and "
+            "the time limit.")
+
     try:
-        size = int(tokens[0])
+        size = int(header[0])
     except ValueError:
-        raise InvalidBoardError("Board size '%s' is not an integer." % tokens[0])
+        raise InvalidBoardError("Board size '%s' is not an integer." % header[0])
     if not MIN_BOARD_SIZE <= size <= MAX_BOARD_SIZE:
         raise InvalidBoardError(
             "Board size must satisfy %d <= N <= %d (received: %d)."
             % (MIN_BOARD_SIZE, MAX_BOARD_SIZE, size))
 
     try:
-        time_limit = int(float(tokens[1]))
+        time_limit = int(float(header[1]))
     except ValueError:
-        raise InvalidBoardError("Time limit '%s' is not a number." % tokens[1])
+        raise InvalidBoardError("Time limit '%s' is not a number." % header[1])
     if time_limit <= 0:
         raise InvalidBoardError(
             "The time limit must be a positive number of milliseconds "
             "(received: %d)." % time_limit)
 
-    body = tokens[2:]
+    body = []
+    for ln in lines[2:]:
+        row_tokens = [t for t in re.split(r"[\s,]+", ln) if t]
+        if len(row_tokens) == 1 and len(row_tokens[0]) == size:
+            row_tokens = list(row_tokens[0])
+        body.extend(row_tokens)
     expected = size * size
     if not body:
         cells = [EMPTY] * expected
@@ -996,6 +1003,8 @@ def _tc_agent_finds_winning_move(log):
     assert (result.row, result.col) in ((6, 3), (6, 2)), \
         "Expected a winning move at (6,3) or (6,2), got (%d,%d)" \
         % (result.row, result.col)
+    assert result.nodes_expanded == 0, \
+        "Tactical scans must not be reported as expanded MCTS nodes."
     log.write("  agent move = (%d,%d) via '%s' | win probability = %.2f"
               % (result.row, result.col, result.strategy, result.win_probability))
     return True
@@ -1081,6 +1090,15 @@ def _tc_board_edge_cases(log):
         load_game_input("no_such_file_G116.txt")
     except InvalidBoardError as exc:
         log.write("  missing input file rejected : %s" % exc)
+    compact = "_tmp_compact_input_G116.txt"
+    with open(compact, "w", encoding="utf-8") as fh:
+        fh.write("7\n2000\n" + "0000000\n" * 7)
+    try:
+        size, limit, cells = load_game_input(compact)
+        assert size == 7 and limit == 2000 and cells == [EMPTY] * 49
+        log.write("  compact board rows accepted : 7 rows of '0000000'")
+    finally:
+        os.remove(compact)
     return True
 
 

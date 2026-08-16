@@ -1,0 +1,423 @@
+Input file read successfully : inputPS04_compact.txt
+==============================================================================
+           HEX GAME AI - MONTE CARLO TREE SEARCH (UCT) - GROUP G116
+==============================================================================
+Board Size                : 7 x 7
+Time Limit per AI Move    : 2000 ms
+Player A (1)              : AI Agent - connects TOP row to BOTTOM row
+Player B (2)              : Human    - connects LEFT col to RIGHT col
+Adjacency                 : (r-1,c) (r+1,c) (r,c-1) (r,c+1) (r-1,c+1) (r+1,c-1)
+Initial Board :
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+
+====================Turn 1===============================
+Player                    : A (AI)
+Move Selected             : (4,1)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 68,948
+Nodes Expanded            : 68,948
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.5783
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+
+====================Turn 2===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+Player B, Enter your move (row,col): 1,2
+Move Entered              : (1,2)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 6056 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+
+====================Turn 3===============================
+Player                    : A (AI)
+Move Selected             : (6,0)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 70,093
+Nodes Expanded            : 70,093
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.5891
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+
+====================Turn 4===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+Player B, Enter your move (row,col): 2,3
+Move Entered              : (2,3)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 22492 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 0 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+
+====================Turn 5===============================
+Player                    : A (AI)
+Move Selected             : (2,4)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 70,124
+Nodes Expanded            : 70,124
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.5985
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+
+====================Turn 6===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 0 0 0 0
+0 1 0 0 0 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+Player B, Enter your move (row,col): 4,4
+Move Entered              : (4,4)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 3413 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 0 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+
+====================Turn 7===============================
+Player                    : A (AI)
+Move Selected             : (3,3)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 70,525
+Nodes Expanded            : 70,525
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.6574
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+
+====================Turn 8===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 0 0 0
+1 0 0 0 0 0 0
+Player B, Enter your move (row,col): 5,4
+Move Entered              : (5,4)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 2353 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 0 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 2 0 0
+1 0 0 0 0 0 0
+
+====================Turn 9===============================
+Player                    : A (AI)
+Move Selected             : (1,4)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 69,976
+Nodes Expanded            : 69,976
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.7462
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 2 0 0
+1 0 0 0 0 0 0
+
+====================Turn 10===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 2 0 0
+1 0 0 0 0 0 0
+Player B, Enter your move (row,col): 5,6
+Move Entered              : (5,6)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 3983 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+0 0 0 0 2 0 2
+1 0 0 0 0 0 0
+
+====================Turn 11===============================
+Player                    : A (AI)
+Move Selected             : (5,0)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 71,839
+Nodes Expanded            : 71,839
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.8440
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 0
+
+====================Turn 12===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 0
+Player B, Enter your move (row,col): 6,6
+Move Entered              : (6,6)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 3520 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 0 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 2
+
+====================Turn 13===============================
+Player                    : A (AI)
+Move Selected             : (3,2)
+Search Algorithm          : Monte Carlo Tree Search (UCT)
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 74,418
+Nodes Expanded            : 73,422
+Search Depth (tree)       : 4
+Heuristic Score (Win Prob): 0.9243
+Execution Time            : 2000 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 1 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 2
+
+====================Turn 14===============================
+Player                    : B (Human)
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 0 2 1 0 0
+0 0 1 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 2
+Player B, Enter your move (row,col): 2,2
+Move Entered              : (2,2)
+Move Validation           : VALID
+Invalid Attempts          : 0
+Execution Time            : 4258 ms
+Game Status               : CONTINUE
+Current Board :
+0 0 0 0 0 0 0
+0 0 2 0 1 0 0
+0 0 2 2 1 0 0
+0 0 1 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 2
+
+====================Turn 15===============================
+Player                    : A (AI)
+Move Selected             : (0,4)
+Search Algorithm          : MCTS(UCT) + immediate-win detection
+Exploration Constant (c)  : 1.414
+Simulations (Rollouts)    : 0
+Nodes Expanded            : 0
+Search Depth (tree)       : 0
+Heuristic Score (Win Prob): +INF
+Execution Time            : 0 ms
+Game Status               : TERMINAL
+Terminal State            : YES
+Winner                    : Player A
+Winning Path              : (0,4) -> (1,4) -> (2,4) -> (3,3) -> (3,2) -> (4,1) -> (5,0) -> (6,0)
+Current Board :
+0 0 0 0 1 0 0
+0 0 2 0 1 0 0
+0 0 2 2 1 0 0
+0 0 1 1 0 0 0
+0 1 0 0 2 0 0
+1 0 0 0 2 0 2
+1 0 0 0 0 0 2
+
+==============================================================================
+                              GAME OVER
+==============================================================================
+Winner                    : Player A
+Total Turns               : 15
+Total AI Moves            : 8
+Total Human Moves         : 7
+Average Simulations       : 61,990
+Average Nodes Expanded    : 61,865
+Average Search Depth      : 3.5
+Average AI Move Time      : 1,750 ms
+Maximum Search Depth      : 4
+Maximum Nodes Expanded    : 73,422
+Game Result               : PLAYER_A_WINS
+==============================================================================
+
+Complete transcript written to 'outputPS04_compact.txt'.
+
+==============================================================================
+                          BUILT-IN TEST CASES
+==============================================================================
+
+TEST CASE 1 : Hex adjacency rules (6 neighbours, 2 forbidden diagonals)
+  neighbours(3,3) = [(2, 3), (2, 4), (3, 2), (3, 4), (4, 2), (4, 3)]
+  forbidden (2,2) and (4,4) correctly absent; corner (0,0) = [(0, 1), (1, 0)]
+  RESULT : PASSED
+
+TEST CASE 2 : Terminal detection + winning path (problem-statement example)
+  winner = Player A
+  winning path = (0,2) -> (1,2) -> (1,3) -> (2,3) -> (3,3) -> (4,2)
+  RESULT : PASSED
+
+TEST CASE 3 : Player B left-right connection detection
+  Player B row-3 chain detected, winner = Player B
+  RESULT : PASSED
+
+TEST CASE 4 : MCTS agent plays an immediate winning move
+  agent move = (6,2) via 'MCTS(UCT) + immediate-win detection' | win probability = 1.00
+  RESULT : PASSED
+
+TEST CASE 5 : MCTS agent legality, statistics and time budget
+  move=(3,4) simulations=11,507 nodes=11,507 depth=3 time=500 ms
+  RESULT : PASSED
+
+TEST CASE 6 : Invalid / malformed human input handling
+  input ''       rejected : Expected exactly two numbers in the form 'row,col' (received: '').
+  input 'abc'    rejected : Expected exactly two numbers in the form 'row,col' (received: 'abc').
+  input '3'      rejected : Expected exactly two numbers in the form 'row,col' (received: '3').
+  input '1,2,3'  rejected : Expected exactly two numbers in the form 'row,col' (received: '1,2,3').
+  input 'x,y'    rejected : Row and column must be integers (received: 'x,y').
+  input '9,9'    rejected : Move (9,9) is out of range - valid rows/cols are 0..6.
+  input '-1,4'   rejected : Move (-1,4) is out of range - valid rows/cols are 0..6.
+  input '2,2'    rejected : Cell (2,2) is already occupied by Player A.
+  input '(4, 1)' accepted as (4,1)
+  RESULT : PASSED
+
+TEST CASE 7 : Data-structure and input-file edge cases
+  full board rejected : MCTS cannot search: the board is full and holds no legal move.
+  duplicate insert rejected : Cell (0,0) is already occupied by Player A.
+  delete on empty cell rejected : Cannot remove from cell (0,0): the cell is already empty.
+  bad input file rejected : Board size must satisfy 7 <= N <= 11 (received: 5).
+  missing input file rejected : Input file 'no_such_file_G116.txt' was not found.
+  compact board rows accepted : 7 rows of '0000000'
+  RESULT : PASSED
+
+7 of 7 test cases passed.
+==============================================================================
