@@ -15,32 +15,36 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from dataset import HeadlineDataset, make_collate_fn
-from model import HeadlineTransformer
-from vocab import PAD, Vocab, build_and_save_vocab
+try:  # Supports both `python training/train.py` and `python -m training.train`.
+    from .dataset import HeadlineDataset, make_collate_fn
+    from .model import HeadlineTransformer
+    from .vocab import PAD, build_and_save_vocab
+except ImportError:  # pragma: no cover - direct script execution
+    from dataset import HeadlineDataset, make_collate_fn
+    from model import HeadlineTransformer
+    from vocab import PAD, build_and_save_vocab
 
 
-def run_epoch(model, loader, optimizer, criterion, device, train=True):
+def run_epoch(model, loader, optimizer, criterion, device, pad_idx, train=True):
     model.train() if train else model.eval()
     total_loss, total_tokens = 0.0, 0
-    torch.set_grad_enabled(train)
-    for src, tgt in loader:
-        src, tgt = src.to(device), tgt.to(device)
-        tgt_in, tgt_out = tgt[:, :-1], tgt[:, 1:]
+    with torch.set_grad_enabled(train):
+        for src, tgt in loader:
+            src, tgt = src.to(device), tgt.to(device)
+            tgt_in, tgt_out = tgt[:, :-1], tgt[:, 1:]
 
-        if train:
-            optimizer.zero_grad()
-        logits = model(src, tgt_in)  # (B, T-1, V)
-        loss = criterion(logits.reshape(-1, logits.size(-1)), tgt_out.reshape(-1))
-        if train:
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
+            if train:
+                optimizer.zero_grad()
+            logits = model(src, tgt_in)  # (B, T-1, V)
+            loss = criterion(logits.reshape(-1, logits.size(-1)), tgt_out.reshape(-1))
+            if train:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
 
-        n_tok = (tgt_out != 0).sum().item()
-        total_loss += loss.item() * n_tok
-        total_tokens += n_tok
-    torch.set_grad_enabled(True)
+            n_tok = (tgt_out != pad_idx).sum().item()
+            total_loss += loss.item() * n_tok
+            total_tokens += n_tok
     return total_loss / max(total_tokens, 1)
 
 
@@ -118,8 +122,8 @@ def main():
     t_start = time.time()
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
-        train_loss = run_epoch(model, train_loader, optimizer, criterion, device, train=True)
-        val_loss = run_epoch(model, val_loader, optimizer, criterion, device, train=False)
+        train_loss = run_epoch(model, train_loader, optimizer, criterion, device, vocab.stoi[PAD], train=True)
+        val_loss = run_epoch(model, val_loader, optimizer, criterion, device, vocab.stoi[PAD], train=False)
         dt = time.time() - t0
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)

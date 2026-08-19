@@ -1,7 +1,7 @@
 {
-  "train_csv": "../data/processed/subset/train.csv",
-  "val_csv": "../data/processed/subset/val.csv",
-  "out_dir": "../models/transformer_scratch",
+  "train_csv": "..\\data\\processed\\subset\\train.csv",
+  "val_csv": "..\\data\\processed\\subset\\val.csv",
+  "out_dir": "..\\models\\transformer_scratch",
   "vocab_size": 8000,
   "min_freq": 2,
   "max_src_len": 100,
@@ -20,5 +20,5 @@
   "vocab_size_actual": 8000,
   "n_parameters": 10106688,
   "device": "cpu",
-  "total_train_time_sec": 1760.652774810791
+  "total_train_time_sec": null
 }

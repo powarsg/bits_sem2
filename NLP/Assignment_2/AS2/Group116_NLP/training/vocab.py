@@ -40,7 +40,13 @@ class Vocab:
                     break
                 continue
             toks.append(s)
-        return " ".join(toks)
+        text = " ".join(toks)
+        # Keep generated headlines readable: punctuation should follow the
+        # preceding word, while opening punctuation should not have a space
+        # after it.  Token IDs remain unchanged for model training.
+        text = re.sub(r"\s+([.,!?;:%)])", r"\1", text)
+        text = re.sub(r"([('\"])\s+", r"\1", text)
+        return text
 
     def save(self, path):
         with open(path, "w") as f:

@@ -2,7 +2,10 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from vocab import PAD, SOS, EOS
+try:  # Supports both `python training/train.py` and `python -m training.train`.
+    from .vocab import PAD
+except ImportError:  # pragma: no cover - direct script execution
+    from vocab import PAD
 
 
 class HeadlineDataset(Dataset):
@@ -21,6 +24,10 @@ class HeadlineDataset(Dataset):
         tgt_ids = self.vocab.encode(
             str(row["headline"]), max_len=self.max_tgt_len - 2, add_sos_eos=True
         )
+        # `nn.Transformer` cannot attend to an empty source sequence.  This
+        # should not occur in cleaned data, but keeps ad-hoc CSV inputs safe.
+        if not src_ids:
+            src_ids = [self.vocab.stoi[PAD]]
         return torch.tensor(src_ids, dtype=torch.long), torch.tensor(tgt_ids, dtype=torch.long)
 
 

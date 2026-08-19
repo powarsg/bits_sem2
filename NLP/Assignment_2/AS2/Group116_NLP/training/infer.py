@@ -6,8 +6,12 @@ from pathlib import Path
 
 import torch
 
-from model import HeadlineTransformer
-from vocab import EOS, PAD, SOS, Vocab
+try:  # Supports imports from the app as well as `python -m training.infer`.
+    from .model import HeadlineTransformer
+    from .vocab import EOS, PAD, SOS, Vocab
+except ImportError:  # pragma: no cover - direct script execution
+    from model import HeadlineTransformer
+    from vocab import EOS, PAD, SOS, Vocab
 
 
 class HeadlineGenerator:
@@ -32,13 +36,17 @@ class HeadlineGenerator:
         # Checkpoints shipped in the code archive may be stored in fp16 to
         # keep the zip under upload size limits; cast back to fp32 for
         # numerically stable CPU inference regardless of how it was saved.
-        state = torch.load(model_dir / "best_model.pt", map_location=self.device)
+        state = torch.load(model_dir / "best_model.pt", map_location=self.device, weights_only=True)
+        # Also accept checkpoints saved as {"state_dict": ...}, a common
+        # PyTorch convention, while retaining compatibility with this project.
+        state = state.get("state_dict", state)
         state = {k: v.float() if torch.is_floating_point(v) else v for k, v in state.items()}
         self.model.load_state_dict(state)
         self.model.eval()
 
         self.max_src_len = self.config["max_src_len"]
         self.max_tgt_len = self.config["max_tgt_len"]
+        self._forbidden_generation_ids = {self.vocab.stoi[PAD], self.vocab.stoi[SOS]}
 
     @torch.no_grad()
     def _encode(self, article_text):
@@ -76,6 +84,8 @@ class HeadlineGenerator:
         for _ in range(max_len - 1):
             logits = self.model.decode_step(ys, memory, src_kpm)
             scores = logits[0, -1].clone()
+            for tok in self._forbidden_generation_ids:
+                scores[tok] = float("-inf")
             for tok in self._banned_next_tokens(seq, no_repeat_ngram_size):
                 scores[tok] = float("-inf")
             next_id = scores.argmax().item()
@@ -106,6 +116,8 @@ class HeadlineGenerator:
                 ys = torch.tensor([seq], dtype=torch.long, device=self.device)
                 logits = self.model.decode_step(ys, memory, src_kpm)
                 log_probs = torch.log_softmax(logits[0, -1], dim=-1)
+                for tok in self._forbidden_generation_ids:
+                    log_probs[tok] = float("-inf")
                 for tok in self._banned_next_tokens(seq, no_repeat_ngram_size):
                     log_probs[tok] = float("-inf")
                 k = min(beam_size, (log_probs > float("-inf")).sum().item()) or 1

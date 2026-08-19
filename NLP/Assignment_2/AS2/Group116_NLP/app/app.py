@@ -49,6 +49,8 @@ def generate_for_article(article_text, beam_size, top_k):
 
 def extract_articles_from_csv(file_storage, max_rows=25):
     df = pd.read_csv(file_storage)
+    if df.empty or len(df.columns) == 0:
+        return []
     col = None
     for candidate in ["article", "text", "body", "content"]:
         if candidate in df.columns:
@@ -67,8 +69,14 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    beam_size = int(request.form.get("beam_size", 4))
-    top_k = int(request.form.get("top_k", 3))
+    try:
+        beam_size = int(request.form.get("beam_size", 4))
+        top_k = int(request.form.get("top_k", 3))
+    except (TypeError, ValueError):
+        return render_template("index.html", error="Beam size and top-k must be whole numbers."), 400
+    if not 1 <= beam_size <= 8 or not 1 <= top_k <= 5:
+        return render_template("index.html", error="Beam size must be 1–8 and top-k must be 1–5."), 400
+    top_k = min(top_k, beam_size)
 
     articles = []
     error = None
