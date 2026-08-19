@@ -1,0 +1,11 @@
+{
+  "total_after_cleaning": 98373,
+  "train": 88535,
+  "val": 4918,
+  "test": 4920,
+  "article_words_mean": 58.23837841684202,
+  "article_words_median": 59.0,
+  "headline_words_mean": 9.553810496782654,
+  "headline_words_median": 10.0,
+  "vocab_size": 30004
+}

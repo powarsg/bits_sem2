@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automatic News Headline Generator</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📰 Automatic News Headline Generator</h1>
+    <p class="subtitle">NLP Assignment 2 &mdash; Group 116 &middot; Encoder&ndash;Decoder Transformer</p>
+  </header>
+
+  <section class="card">
+    <form action="{{ url_for('generate') }}" method="post" enctype="multipart/form-data">
+      <label for="article_text">Paste a news article</label>
+      <textarea id="article_text" name="article_text" rows="8"
+        placeholder="Paste the body of a news article here...">{{ pasted_text or '' }}</textarea>
+
+      <div class="row">
+        <div class="field">
+          <label for="file">...or upload a file</label>
+          <input type="file" id="file" name="file" accept=".txt,.csv">
+          <p class="hint">.txt = one article (or multiple, separated by a blank line)<br>.csv = one article per row (column named "article" or "text")</p>
+        </div>
+        <div class="field small">
+          <label for="beam_size">Beam size</label>
+          <input type="number" id="beam_size" name="beam_size" value="{{ beam_size or 4 }}" min="1" max="8">
+        </div>
+        <div class="field small">
+          <label for="top_k">Top-k headlines</label>
+          <input type="number" id="top_k" name="top_k" value="{{ top_k or 3 }}" min="1" max="5">
+        </div>
+      </div>
+
+      <button type="submit">Generate Headline(s)</button>
+    </form>
+  </section>
+
+  {% if error %}
+  <section class="card error">{{ error }}</section>
+  {% endif %}
+
+  {% if results %}
+  <section class="results">
+    <h2>Generated Headlines ({{ results|length }} article{{ 's' if results|length != 1 else '' }})</h2>
+    {% for r in results %}
+    <div class="result-card">
+      <div class="article-preview">
+        <strong>Input article:</strong>
+        <p>{{ r.article_preview }}</p>
+      </div>
+      <div class="headline-block">
+        <div class="main-headline">
+          <span class="tag">Generated headline</span>
+          <h3>{{ r.greedy_headline }}</h3>
+        </div>
+        {% if r.beam_candidates|length > 1 %}
+        <div class="candidates">
+          <span class="tag">Top-{{ r.beam_candidates|length }} beam-search candidates</span>
+          <ol>
+            {% for c in r.beam_candidates %}
+            <li>{{ c }}</li>
+            {% endfor %}
+          </ol>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <footer>
+    <p>Encoder&ndash;Decoder Transformer trained from scratch on the News Summary / Inshorts dataset &middot; greedy &amp; beam-search decoding</p>
+  </footer>
+</div>
+</body>
+</html>
