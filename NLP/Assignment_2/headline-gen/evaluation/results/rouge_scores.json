@@ -1,0 +1,7 @@
+{
+  "rouge1": 0.14717963763243158,
+  "rouge2": 0.01796407701616596,
+  "rougeL": 0.13639185257168163,
+  "n_eval": 800,
+  "test_csv": "/Users/sagar.powar/sagar/my_data/bits/git/bits_sem2/NLP/Assignment_2/headline-gen/data/processed/subset/test.csv"
+}

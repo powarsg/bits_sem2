@@ -1,0 +1,7 @@
+{
+  "model_dir": "/Users/sagar.powar/sagar/my_data/bits/git/bits_sem2/NLP/Assignment_2/headline-gen/models/transformer_scratch",
+  "test_csv": "/Users/sagar.powar/sagar/my_data/bits/git/bits_sem2/NLP/Assignment_2/headline-gen/data/processed/subset/test.csv",
+  "n_eval_requested": 0,
+  "n_eval_completed": 800,
+  "decoding": "greedy"
+}
